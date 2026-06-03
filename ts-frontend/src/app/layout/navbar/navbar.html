@@ -1,33 +1,78 @@
 <nav class="nav">
 	<div class="nav-inner">
-		<div class="nav-brand">
-			<div class="nav-brand-icon"><img src="logo ts blanco.svg" alt="TechStore logo"></div>
-			<span>TechStore</span>
-		</div>
-
-		<div class="nav-links">
-			<div class="nav-link on"><i class="fa-solid fa-house"></i> Inicio</div>
-			<div class="nav-link"><i class="fa-solid fa-microchip"></i> Componentes</div>
-			<div class="nav-link"><i class="fa-solid fa-keyboard"></i> Perifericos</div>
-			<div class="nav-link"><i class="fa-solid fa-desktop"></i> Monitores</div>
-			<div class="nav-link"><i class="fa-solid fa-laptop"></i> Laptops</div>
-		</div>
-
-		<div class="nav-search">
-			<i class="fa-solid fa-magnifying-glass"></i>
-			<input placeholder="Buscar producto, SKU...">
-		</div>
-
-		<div class="nav-right">
-			<div class="nav-cart" title="Carrito">
-				<i class="fa-solid fa-cart-shopping"></i>
-				<span class="nav-cart-count">2</span>
+		<div class="nav-top">
+			<div class="nav-brand">
+				<div class="nav-brand-icon"><img src="logo ts blanco.svg" alt="TechStore logo"></div>
+				<span>TechStore</span>
 			</div>
-			<div class="nav-user">
-				<div class="nav-avatar">US</div>
-				<span>usuario</span>
+
+			<div class="nav-search">
+				<i class="fa-solid fa-magnifying-glass"></i>
+				<input placeholder="Buscar producto, SKU...">
 			</div>
-			<button class="nav-logout"><i class="fa-solid fa-right-from-bracket"></i> Salir</button>
+
+			<div class="nav-right">
+				<div class="nav-cart" title="Carrito">
+					<i class="fa-solid fa-cart-shopping"></i>
+					<span class="nav-cart-count">2</span>
+				</div>
+				<div class="nav-user">
+					<div class="nav-avatar">US</div>
+					<span>usuario</span>
+				</div>
+				<button class="nav-logout"><i class="fa-solid fa-right-from-bracket"></i> Salir</button>
+			</div>
+		</div>
+
+		<div class="nav-bottom">
+			<div class="nav-links">
+				<a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+					<i class="fa-solid fa-house"></i> Inicio
+				</a>
+
+				<div class="nav-item">
+					<a class="nav-link" routerLink="/componentes" routerLinkActive="active">
+						<i class="fa-solid fa-microchip"></i> Componentes
+						<span class="nav-caret"><i class="fa-solid fa-chevron-down"></i></span>
+					</a>
+					<div class="nav-menu">
+						<a routerLink="/componentes" [queryParams]="{ sub: 'procesadores' }">Procesadores</a>
+						<a routerLink="/componentes" [queryParams]="{ sub: 'tarjetas-video' }">Tarjetas de video</a>
+						<a routerLink="/componentes" [queryParams]="{ sub: 'memoria-ram' }">Memoria RAM</a>
+						<a routerLink="/componentes" [queryParams]="{ sub: 'almacenamiento' }">Almacenamiento</a>
+					</div>
+				</div>
+
+				<div class="nav-item">
+					<a class="nav-link" routerLink="/perifericos" routerLinkActive="active">
+						<i class="fa-solid fa-keyboard"></i> Perifericos
+						<span class="nav-caret"><i class="fa-solid fa-chevron-down"></i></span>
+					</a>
+					<div class="nav-menu">
+						<a routerLink="/perifericos" [queryParams]="{ sub: 'teclados' }">Teclados</a>
+						<a routerLink="/perifericos" [queryParams]="{ sub: 'mouse' }">Mouse</a>
+						<a routerLink="/perifericos" [queryParams]="{ sub: 'audio' }">Audio</a>
+						<a routerLink="/perifericos" [queryParams]="{ sub: 'sillas' }">Sillas gamer</a>
+					</div>
+				</div>
+
+				<div class="nav-item">
+					<a class="nav-link" routerLink="/monitores" routerLinkActive="active">
+						<i class="fa-solid fa-desktop"></i> Monitores
+						<span class="nav-caret"><i class="fa-solid fa-chevron-down"></i></span>
+					</a>
+					<div class="nav-menu">
+						<a routerLink="/monitores" [queryParams]="{ sub: 'gaming' }">Gaming</a>
+						<a routerLink="/monitores" [queryParams]="{ sub: 'ultrawide' }">Ultrawide</a>
+						<a routerLink="/monitores" [queryParams]="{ sub: '4k' }">4K</a>
+						<a routerLink="/monitores" [queryParams]="{ sub: 'curvos' }">Curvos</a>
+					</div>
+				</div>
+
+				<a class="nav-link" routerLink="/laptops" routerLinkActive="active">
+					<i class="fa-solid fa-laptop"></i> Laptops
+				</a>
+			</div>
 		</div>
 	</div>
 </nav>

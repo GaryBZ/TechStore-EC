@@ -1,5 +1,5 @@
+
 .nav {
-	height: 58px;
 	border-bottom: 1px solid var(--border);
 	position: sticky;
 	top: 0;
@@ -11,11 +11,21 @@
 .nav-inner {
 	max-width: 1180px;
 	margin: 0 auto;
-	padding: 0 32px;
-	height: 100%;
+	padding: 10px 32px 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.nav-top {
 	display: flex;
 	align-items: center;
 	gap: 0;
+}
+
+.nav-bottom {
+	display: flex;
+	align-items: center;
 }
 
 .nav-brand {
@@ -60,11 +70,60 @@
 	color: var(--text-sub);
 	cursor: pointer;
 	transition: color 0.15s, background 0.15s;
+	text-decoration: none;
 }
 
 .nav-link i { font-size: 12px; }
 .nav-link:hover { color: var(--text); background: var(--surface-2); }
-.nav-link.on { color: var(--text); font-weight: 500; }
+.nav-link.active { color: var(--text); font-weight: 500; background: var(--surface-2); }
+
+.nav-item {
+	position: relative;
+}
+
+.nav-caret {
+	margin-left: 4px;
+	font-size: 9px;
+	color: var(--text-muted);
+}
+
+.nav-menu {
+	position: absolute;
+	top: 36px;
+	left: 0;
+	background: rgba(14, 14, 14, 0.98);
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	padding: 10px;
+	min-width: 200px;
+	box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+	display: grid;
+	gap: 6px;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(6px);
+	transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+	z-index: 60;
+}
+
+.nav-menu a {
+	color: var(--text-sub);
+	text-decoration: none;
+	font-size: 12px;
+	padding: 6px 8px;
+	border-radius: 8px;
+}
+
+.nav-menu a:hover {
+	color: var(--text);
+	background: var(--surface-2);
+}
+
+.nav-item:hover .nav-menu {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+}
 
 .nav-search {
 	margin: 0 24px 0 auto;
@@ -180,3 +239,38 @@
 }
 
 .nav-logout:hover { color: var(--text); }
+
+@media (max-width: 960px) {
+	.nav-top {
+		flex-wrap: wrap;
+		gap: 12px;
+	}
+
+	.nav-search {
+		margin: 0;
+		order: 3;
+		width: 100%;
+	}
+
+	.nav-search input {
+		width: 100%;
+	}
+
+	.nav-right {
+		margin-left: auto;
+	}
+
+	.nav-links {
+		flex-wrap: wrap;
+	}
+
+	.nav-menu {
+		position: static;
+		opacity: 1;
+		visibility: visible;
+		transform: none;
+		box-shadow: none;
+		border: 1px solid var(--border);
+		margin-left: 12px;
+	}
+}

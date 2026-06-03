@@ -1,1 +1,147 @@
-<p>perifericos works!</p>
+<section class="components-page">
+  <div class="components-header">
+    <div>
+      <p class="components-kicker">Periféricos</p>
+      <h1>Completa tu experiencia gaming</h1>
+      <p class="components-sub">Teclados, mouse, audífonos, monitores y accesorios de calidad.</p>
+    </div>
+    <div class="components-actions">
+      <div class="sort">
+        <label for="sort">Ordenar</label>
+        <select id="sort">
+          <option>Ultimos</option>
+          <option>Precio: bajo a alto</option>
+          <option>Precio: alto a bajo</option>
+          <option>Mas vendidos</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="components-layout">
+    <aside class="filters">
+      <div class="filter-block">
+        <h3>Marca</h3>
+        <label class="check"><input type="checkbox" /> Razer</label>
+        <label class="check"><input type="checkbox" /> Logitech</label>
+      </div>
+
+      <div class="filter-block">
+        <h3>Precio</h3>
+        <div class="range">
+          <div class="range-row">
+            <span>$90</span>
+            <span>$800</span>
+          </div>
+          <input type="range" min="90" max="800" value="250" />
+        </div>
+        <div class="price-inputs">
+          <input type="number" value="150" min="90" max="800" />
+          <input type="number" value="800" min="90" max="800" />
+        </div>
+      </div>
+
+      <div class="filter-block">
+        <h3>Categoria</h3>
+        <label class="check"><input type="checkbox" /> Audio</label>
+        <label class="check"><input type="checkbox" /> Teclados</label>
+        <label class="check"><input type="checkbox" /> Mouse</label>
+        <label class="check"><input type="checkbox" /> Monitores</label>
+      </div>
+
+      <button class="filter-reset">Limpiar filtros</button>
+    </aside>
+
+    <div class="cards">
+      <article class="card">
+        <div class="card-media keyboard"></div>
+        <div class="card-body">
+          <div class="card-top">
+            <span class="badge">Teclado</span>
+          </div>
+          <h3>Logitech G Pro X TKL</h3>
+          <p class="meta">Mecánico · RGB · Wireless</p>
+          <div class="card-bottom">
+            <span class="price">$189</span>
+            <span class="stock">Stock: 15</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-media mouse"></div>
+        <div class="card-body">
+          <div class="card-top">
+            <span class="badge">Mouse</span>
+          </div>
+          <h3>Logitech G502 X Plus</h3>
+          <p class="meta">25600 DPI · RGB · Wireless</p>
+          <div class="card-bottom">
+            <span class="price">$149</span>
+            <span class="stock">Stock: 22</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-media headset"></div>
+        <div class="card-body">
+          <div class="card-top">
+            <span class="badge">Audio</span>
+          </div>
+          <h3>HyperX Cloud III Wireless</h3>
+          <p class="meta">53 mm · DTS Audio · 120h</p>
+          <div class="card-bottom">
+            <span class="price">$169</span>
+            <span class="stock">Stock: 18</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-media monitor"></div>
+        <div class="card-body">
+          <div class="card-top">
+            <span class="badge">Monitor</span>
+          </div>
+          <h3>Samsung Odyssey G5 27"</h3>
+          <p class="meta">QHD · 165Hz · 1ms</p>
+          <div class="card-bottom">
+            <span class="price">$299</span>
+            <span class="stock">Stock: 9</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-media microphone"></div>
+        <div class="card-body">
+          <div class="card-top">
+            <span class="badge">Micrófono</span>
+          </div>
+          <h3>HyperX QuadCast S</h3>
+          <p class="meta">USB · RGB · Anti-vibración</p>
+          <div class="card-bottom">
+            <span class="price">$139</span>
+            <span class="stock">Stock: 11</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-media webcam"></div>
+        <div class="card-body">
+          <div class="card-top">
+            <span class="badge">Webcam</span>
+          </div>
+          <h3>Logitech StreamCam</h3>
+          <p class="meta">1080p 60FPS · USB-C</p>
+          <div class="card-bottom">
+            <span class="price">$129</span>
+            <span class="stock">Stock: 7</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
