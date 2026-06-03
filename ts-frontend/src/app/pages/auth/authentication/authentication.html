@@ -1,0 +1,176 @@
+<main class="auth-page" [class.admin-mode]="isAdmin()">
+  <div class="auth-card">
+
+    <!-- LEFT -->
+    <div class="auth-left">
+
+      <a class="logo" routerLink="/inicio">
+        <div class="logo-icon"><img src="logo ts blanco.svg" alt="TechStore logo"></div>
+        <span class="logo-text">TechStore</span>
+      </a>
+
+      <!-- Mode toggle -->
+      <div class="mode-toggle">
+        <button class="mode-btn" [class.active-client]="isClient()" (click)="setMode('client')">
+          <i class="fa-solid fa-user"></i> Cliente
+        </button>
+        <button class="mode-btn" [class.active-admin]="isAdmin()" (click)="setMode('admin')">
+          <i class="fa-solid fa-shield-halved"></i> Admin
+        </button>
+      </div>
+
+      <!-- Tab bar -->
+      <div class="tab-bar">
+        <button class="tab-btn" [class.active]="tab() === 'login'" (click)="setTab('login')">Iniciar sesión</button>
+        <button class="tab-btn" [class.active]="tab() === 'register'" [disabled]="isAdmin()" (click)="setTab('register')">Crear cuenta</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div class="form-panel" [class.active]="tab() === 'login'">
+        <div class="form-heading">
+          <div class="admin-badge"><i class="fa-solid fa-shield-halved"></i> Acceso restringido</div>
+          <h1>{{ loginTitle() }}</h1>
+          <p>{{ loginSub() }}</p>
+        </div>
+
+        <div class="field">
+          <label>Correo</label>
+          <div class="input-wrap">
+            <i class="fa-regular fa-envelope"></i>
+            <input type="email" placeholder="tu@email.com" autocomplete="email" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Contraseña</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" placeholder="••••••••" autocomplete="current-password" />
+          </div>
+        </div>
+
+        <div class="meta-row">
+          <button class="forgot-link" type="button">¿Olvidaste tu contraseña?</button>
+        </div>
+
+        <button class="submit-btn" type="button" [disabled]="loginLoading()" (click)="handleLogin()">
+          <i [class]="loginBtnIcon()"></i> {{ loginBtnLabel() }}
+        </button>
+      </div>
+
+      <!-- REGISTER -->
+      <div class="form-panel" [class.active]="tab() === 'register'">
+        <div class="form-heading">
+          <div class="admin-badge"><i class="fa-solid fa-shield-halved"></i> Acceso restringido</div>
+          <h1>Crear cuenta</h1>
+          <p>Únete a TechStore y arma tu setup al instante.</p>
+        </div>
+
+        <div class="fields-row">
+          <div class="field">
+            <label>Nombre</label>
+            <div class="input-wrap">
+              <i class="fa-regular fa-user"></i>
+              <input type="text" placeholder="Tu nombre" autocomplete="given-name" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Apellido</label>
+            <div class="input-wrap">
+              <i class="fa-regular fa-user"></i>
+              <input type="text" placeholder="Apellido" autocomplete="family-name" />
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Correo</label>
+          <div class="input-wrap">
+            <i class="fa-regular fa-envelope"></i>
+            <input type="email" placeholder="tu@email.com" autocomplete="email" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Contraseña</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" placeholder="Mín. 8 caracteres" autocomplete="new-password" />
+          </div>
+        </div>
+
+        <label class="checkbox-field">
+          <input type="checkbox" />
+          <span>Acepto los <a>términos de servicio</a> y la <a>política de privacidad</a> de TechStore.</span>
+        </label>
+
+        <button class="submit-btn" type="button">
+          <i class="fa-solid fa-user-plus"></i> Crear cuenta
+        </button>
+      </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="auth-right">
+      <div class="right-content">
+        <div class="right-label">{{ rightLabel() }}</div>
+        <h2 class="right-heading">
+          {{ rightHeadingMain() }}<br><span>{{ rightHeadingAccent() }}</span>
+        </h2>
+        <p class="right-sub">{{ rightSub() }}</p>
+
+        <!-- Client features -->
+        <div class="feature-list features-client">
+          <div class="feature-item">
+            <div class="feat-icon"><i class="fa-solid fa-microchip"></i></div>
+            <div class="feat-text">
+              <strong>Componentes de gama alta</strong>
+              <span>GPUs, CPUs, NVMe, RAM y periféricos.</span>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feat-icon"><i class="fa-solid fa-bolt"></i></div>
+            <div class="feat-text">
+              <strong>Entrega veloz</strong>
+              <span>Recibe tus productos en un corto periodo.</span>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feat-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="feat-text">
+              <strong>Compra segura</strong>
+              <span>Pagos cifrados y transacciones auditadas.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin features -->
+        <div class="feature-list features-admin">
+          <div class="feature-item">
+            <div class="feat-icon"><i class="fa-solid fa-chart-line"></i></div>
+            <div class="feat-text">
+              <strong>Panel de control</strong>
+              <span>Gestiona ventas, inventario y usuarios.</span>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feat-icon"><i class="fa-solid fa-key"></i></div>
+            <div class="feat-text">
+              <strong>Gestión de keys</strong>
+              <span>Genera, revoca y monitorea licencias.</span>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feat-icon"><i class="fa-solid fa-users-gear"></i></div>
+            <div class="feat-text">
+              <strong>Administración de usuarios</strong>
+              <span>Roles, permisos y auditoría completa.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>

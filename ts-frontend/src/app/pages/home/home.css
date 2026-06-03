@@ -265,14 +265,3 @@
 	color: #fff;
 	border-color: var(--primary);
 }
-
-@media (max-width: 900px) {
-	.hero { padding: 44px 32px; }
-	.hero h1 { font-size: 30px; }
-}
-
-@media (max-width: 700px) {
-	.home { padding: 28px 18px 48px; }
-	.hero { padding: 36px 24px; }
-	.hero h1 { font-size: 26px; }
-}

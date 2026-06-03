@@ -30,6 +30,9 @@ body {
   color: var(--text);
   font-size: 14px;
   line-height: 1.6;
+  height: 100%;
+  margin: 0;
+  overflow-y: auto;
   -webkit-font-smoothing: antialiased;
 }
 
