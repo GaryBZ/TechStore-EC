@@ -116,7 +116,7 @@
 	width: 26px;
 	height: 26px;
 	border-radius: 50%;
-	background: var(--primary);
+	background: rgb(255, 51, 0);
 	display: grid;
 	place-items: center;
 	font-size: 11px;

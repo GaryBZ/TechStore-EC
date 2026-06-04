@@ -25,7 +25,7 @@ export class Authentication {
   constructor( private router: Router) {}
 
   rightLabel = computed(() =>
-    this.isAdmin() ? 'Panel de administración' : 'E-commerce de hardware'
+    this.isAdmin() ? 'Panel de administración' : 'E-commerce de tecnología'
   );
 
   rightHeadingMain = computed(() =>
@@ -52,10 +52,7 @@ export class Authentication {
 
   loginBtnLabel = computed(() => {
     if (this.loginLoading()) return 'Ingresando...';
-    if (this.loginSuccess()) {
-      this.router.navigate(['/inicio']);
-      return '¡Listo!';
-    }
+    if (this.loginSuccess()) return '¡Listo!';
     return 'Ingresar';
   });
 
@@ -93,7 +90,11 @@ export class Authentication {
       this.loginLoading.set(false);
       this.loginSuccess.set(true);
       setTimeout(() => {
-        this.loginSuccess.set(false);
+      if (this.isAdmin()) {
+        this.router.navigate(['/admin']);
+      } else {
+        this.router.navigate(['/inicio']);
+      }
       }, 1500);
     }, 1200);
   }

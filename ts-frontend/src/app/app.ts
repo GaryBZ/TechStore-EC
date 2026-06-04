@@ -26,6 +26,6 @@ export class App {
   }
 
   private shouldHideLayout(url: string): boolean {
-    return url.startsWith('/register') || url.startsWith('/login') || url.startsWith('/admin');
+    return url.startsWith('/authentication') || url.startsWith('/login') || url.startsWith('/admin');
   }
 }
