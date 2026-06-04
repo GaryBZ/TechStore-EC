@@ -9,23 +9,23 @@ import { Navbar } from './layout/navbar/navbar';
   selector: 'app-root',
   imports: [CommonModule, RouterOutlet, Footer, Navbar],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
 })
 export class App {
   protected readonly title = signal('ts-frontend');
   protected readonly showLayout = signal(true);
+  hideLayout = false;
 
-  constructor(private readonly router: Router) {
-    this.updateLayoutVisibility(this.router.url);
-
+  constructor(private router: Router) {
+    this.hideLayout = this.shouldHideLayout(this.router.url);
     this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe(event => {
-        this.updateLayoutVisibility((event as NavigationEnd).urlAfterRedirects);
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event) => {
+        this.hideLayout = this.shouldHideLayout((event as NavigationEnd).urlAfterRedirects);
       });
   }
 
-  private updateLayoutVisibility(url: string): void {
-    this.showLayout.set(!url.startsWith('/authentication'));
+  private shouldHideLayout(url: string): boolean {
+    return url.startsWith('/register') || url.startsWith('/login') || url.startsWith('/admin');
   }
 }

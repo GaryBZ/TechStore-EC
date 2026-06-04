@@ -265,3 +265,72 @@
 	color: #fff;
 	border-color: var(--primary);
 }
+
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-box {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+
+  width: 320px;
+  padding: 18px;
+
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+
+  color: #fff;
+  box-shadow: 0 20px 40px rgba(0,0,0,.35);
+
+  opacity: 0;
+  visibility: hidden;
+
+  transition: all .25s ease;
+  z-index: 100;
+}
+
+.tooltip-wrapper:hover .tooltip-box {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.tooltip-box h4 {
+  margin: 0 0 5px;
+  font-size: 14px;
+  color: var(--primary);
+}
+
+.tooltip-box .section-divider{
+  margin: 0 0 15px;
+}
+
+
+.tooltip-box p {
+  margin: 0 0 5px;
+  line-height: 1.5;
+  color: var(--text-sub);
+  font-size: 12px;
+}
+
+.tooltip-box p:last-child {
+  margin-bottom: 0;
+}
+
+.tooltip-box::after {
+  content: "";
+  position: absolute;
+
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+
+  border-width: 8px;
+  border-style: solid;
+  border-color: #151515 transparent transparent transparent;
+}
