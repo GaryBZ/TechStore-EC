@@ -1,52 +1,57 @@
 <nav class="nav">
-	<div class="nav-inner">
-		<div class="nav-top">
-			<div class="nav-brand">
-				<div class="nav-brand-icon"><img src="logo ts blanco.svg" alt="TechStore logo"></div>
-				<span>TechStore</span>
-			</div>
+  <div class="nav-inner">
+    <div class="nav-top">
+      <div class="nav-brand">
+        <div class="nav-brand-icon"><img src="logo ts blanco.svg" alt="TechStore logo" /></div>
+        <span>TechStore</span>
+      </div>
+    </div>
 
+    <div class="nav-bottom">
+      <div class="nav-links">
+        <a
+          class="nav-link"
+          routerLink="/admin/dashboard"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <i class="fa-solid fa-house"></i> Dashboard
+        </a>
 
-		</div>
+        <a class="nav-link" routerLink="/admin/marcas" routerLinkActive="active">
+          <i class="fa-solid fa-tags"></i> Marcas
+        </a>
 
-		<div class="nav-bottom">
-			<div class="nav-links">
-				<a class="nav-link" routerLink="/admin/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-					<i class="fa-solid fa-house"></i> Dashboard
-				</a>
+        <a class="nav-link" routerLink="/admin/categorias" routerLinkActive="active">
+          <i class="fa-solid fa-table-list"></i> Categorias
+        </a>
 
-				<a class="nav-link" routerLink="/admin/marcas" routerLinkActive="active">
-					<i class="fa-solid fa-tags"></i> Marcas
-				</a>
+        <a class="nav-link" routerLink="/admin/productos" routerLinkActive="active">
+          <i class="fa-solid fa-boxes-packing"></i> Productos
+        </a>
 
-				<a class="nav-link" routerLink="/admin/categorias" routerLinkActive="active">
-					<i class="fa-solid fa-table-list"></i> Categorias
-				</a>
+        <a class="nav-link" routerLink="/admin/pedidos" routerLinkActive="active">
+          <i class="fa-solid fa-cart-shopping"></i> Pedidos
+        </a>
 
-				<a class="nav-link" routerLink="/admin/productos" routerLinkActive="active">
-					<i class="fa-solid fa-boxes-packing"></i> Productos
-				</a>
+        <a class="nav-link" routerLink="/admin/inventario" routerLinkActive="active">
+          <i class="fa-solid fa-boxes-stacked"></i> Inventario
+        </a>
 
-				<a class="nav-link" routerLink="/admin/pedidos" routerLinkActive="active">
-					<i class="fa-solid fa-cart-shopping"></i> Pedidos
-				</a>
+        <a class="nav-link" routerLink="/admin/auditoria" routerLinkActive="active">
+          <i class="fa-solid fa-magnifying-glass-chart"></i> Auditoria
+        </a>
+      </div>
+    </div>
 
-				<a class="nav-link" routerLink="/admin/inventario" routerLinkActive="active">
-					<i class="fa-solid fa-boxes-stacked"></i> Inventario
-				</a>
-
-				<a class="nav-link" routerLink="/admin/auditoria" routerLinkActive="active">
-					<i class="fa-solid fa-magnifying-glass-chart"></i> Auditoria
-				</a>
-			</div>
-		</div>
-
-        			<div class="nav-right">
-				<div class="nav-user">
-					<div class="nav-avatar">GA</div>
-					<span>gary</span>
-				</div>
-				<button class="nav-logout" routerLink="/authentication" routerLinkActive="active"><i class="fa-solid fa-right-from-bracket"></i> Salir</button>
-			</div>
-	</div>
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="nav-avatar">GA</div>
+        <span>gary</span>
+      </div>
+      <button class="nav-logout" routerLink="/authentication" routerLinkActive="active">
+        <i class="fa-solid fa-right-from-bracket"></i> Salir
+      </button>
+    </div>
+  </div>
 </nav>

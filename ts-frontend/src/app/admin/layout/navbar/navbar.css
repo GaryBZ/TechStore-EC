@@ -1,15 +1,10 @@
-:host{
-    display: block;
-    min-height: 100vh;
-}
-
 .nav {
 	border-bottom: 1px solid var(--border);
 	position: sticky;
-	top: 0;
 	background: rgba(9, 9, 9, 0.94);
-	backdrop-filter: blur(12px);
-	z-index: 50;
+	z-index: 100;
+	padding: 0;
+	overflow: hidden;
 }
 
 .nav-inner {
@@ -17,7 +12,6 @@
 	margin: 0 auto;
 	padding: 10px 32px 12px;
 	display: flex;
-
 	gap: 8px;
 }
 
@@ -75,6 +69,7 @@
 	cursor: pointer;
 	transition: color 0.15s, background 0.15s;
 	text-decoration: none;
+	
 }
 
 .nav-link i { font-size: 12px; }
@@ -91,37 +86,6 @@
 	color: var(--text-muted);
 }
 
-.nav-menu {
-	position: absolute;
-	top: 36px;
-	left: 0;
-	background: rgba(14, 14, 14, 0.98);
-	border: 1px solid var(--border);
-	border-radius: 12px;
-	padding: 10px;
-	min-width: 200px;
-	box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
-	display: grid;
-	gap: 6px;
-	opacity: 0;
-	visibility: hidden;
-	transform: translateY(6px);
-	transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
-	z-index: 60;
-}
-
-.nav-menu a {
-	color: var(--text-sub);
-	text-decoration: none;
-	font-size: 12px;
-	padding: 6px 8px;
-	border-radius: 8px;
-}
-
-.nav-menu a:hover {
-	color: var(--text);
-	background: var(--surface-2);
-}
 
 .nav-item:hover .nav-menu {
 	opacity: 1;
