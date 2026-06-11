@@ -1,1 +1,75 @@
-<p>listar-producto works!</p>
+<div class="ph">
+  <h1>Productos</h1>
+  <p>Catálogo completo de productos disponibles en el inventario.</p>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="search-wrap">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input class="search-input" id="searchInput" placeholder="Buscar producto, SKU…" oninput="applyFilters()">
+  </div>
+  <select class="filter-select" id="filterCat" onchange="applyFilters()">
+    <option value="">Todas las categorías</option>
+    <option value="1">Periféricos</option>
+    <option value="2">Componentes</option>
+    <option value="3">Audio</option>
+    <option value="4">Monitores</option>
+  </select>
+  <select class="filter-select" id="filterMar" onchange="applyFilters()">
+    <option value="">Todas las marcas</option>
+    <option value="1">ASUS</option>
+    <option value="2">Corsair</option>
+    <option value="3">NVIDIA</option>
+    <option value="4">Logitech</option>
+    <option value="5">Sennheiser</option>
+  </select>
+  <span class="count-chip" id="countChip">— productos</span>
+  <div class="ml-auto" style="display:flex;gap:8px">
+    <button class="btn-ghost" onclick="exportarCSV()">
+      <i class="fa-solid fa-download"></i> Exportar
+    </button>
+    <button class="btn-primary" onclick="window.location.href='/admin/crear-producto'">
+      <i class="fa-solid fa-plus"></i> Nuevo producto
+    </button>
+  </div>
+</div>
+
+<!-- TABLE -->
+<div class="t-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th style="width:48px">#</th>
+        <th>Producto</th>
+        <th style="width:110px">Categoría</th>
+        <th style="width:100px">Marca</th>
+        <th style="width:100px">Costo</th>
+        <th style="width:100px">Precio</th>
+        <th style="width:80px">Stock mín.</th>
+        <th style="width:90px">Estado</th>
+        <th style="width:96px; text-align:right; padding-right:20px">Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+
+  <!-- EMPTY STATE -->
+  <div class="empty-state" id="emptyState" style="display:none">
+    <div class="empty-icon"><i class="fa-solid fa-box-open"></i></div>
+    <strong style="color:var(--text)">Sin resultados</strong>
+    <span>No se encontraron productos con ese criterio.</span>
+  </div>
+
+  <!-- PAGINATION -->
+  <div class="pagination" id="paginationBar">
+    <span class="pag-info" id="pagInfo"></span>
+    <div class="pag-btns" id="pagBtns"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast">
+  <i class="fa-solid fa-circle-check"></i>
+  <span id="toastMsg"></span>
+</div>

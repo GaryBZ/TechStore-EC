@@ -40,3 +40,36 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
 
 html { scroll-behavior: smooth; }
+
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-group(app){
+  animation-duration: 0.7s;
+  animation-timing-function: ease;
+}
+
+::view-transition-old(app){
+    animation: slide-out 0.7s ease forwards;
+}
+
+::view-transition-new(app){
+    animation: slide-in 0.7s ease forwards;
+}
+
+.app-router {
+  view-transition-name: app;
+}
+
+@keyframes slide-out {
+  to {
+    translate: -100vw;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    translate: 100vw;
+  }
+}

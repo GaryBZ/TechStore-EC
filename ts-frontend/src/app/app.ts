@@ -11,6 +11,7 @@ import { Navbar } from './layout/navbar/navbar';
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
+
 export class App {
   protected readonly title = signal('ts-frontend');
   protected readonly showLayout = signal(true);

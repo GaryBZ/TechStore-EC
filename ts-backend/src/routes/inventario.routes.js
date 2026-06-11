@@ -1,0 +1,13 @@
+import express from 'express';
+import * as C from '../controllers/inventario.controller.js';
+
+const router = express.Router();
+
+router.get('/', C.getAll);
+router.get('/:id', C.getById);
+router.get('/producto/:prd_id', C.getByProducto);
+router.post('/', C.create);
+router.put('/:id', C.update);
+router.delete('/:id', C.remove);
+
+export default router;

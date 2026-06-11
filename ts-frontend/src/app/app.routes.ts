@@ -1,4 +1,3 @@
-import { Marca } from './admin/pages/marca/marca';
 import { Routes } from '@angular/router';
 import { Home } from './pages/home/home';
 import { Componentes } from './pages/products/componentes/componentes';

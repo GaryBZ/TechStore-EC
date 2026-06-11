@@ -407,7 +407,7 @@
     transition: color 0.4s;
   }
 
-  .auth-page.admin-mode .right-label { color: var(--admin-primary); }
+  .auth-page.admin-mode .right-label { color: #fde4b5; }
 
   .right-label::before {
     content: '';

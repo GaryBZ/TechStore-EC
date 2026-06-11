@@ -1,1 +1,82 @@
-<p>auditoria works!</p>
+<div class="ph">
+  <h1>Auditoría</h1>
+  <p>Registro de todas las modificaciones realizadas por administradores.</p>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <!-- Search -->
+  <div class="search-wrap">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input class="search-input" id="searchInput"
+      placeholder="Buscar admin, tabla, IP…"
+      oninput="applyFilters()">
+  </div>
+
+  <!-- Filtro: Tipo de acción -->
+  <select class="filter-sel" id="filterAccion" onchange="applyFilters()">
+    <option value="">Todas las acciones</option>
+    <option value="INSERT">INSERT</option>
+    <option value="UPDATE">UPDATE</option>
+    <option value="DELETE">DELETE</option>
+  </select>
+
+  <!-- Filtro: Tabla -->
+  <select class="filter-sel" id="filterTabla" onchange="applyFilters()">
+    <option value="">Todas las tablas</option>
+    <option value="productos">productos</option>
+    <option value="pedidos">pedidos</option>
+    <option value="inventario">inventario</option>
+    <option value="usuarios">usuarios</option>
+    <option value="clientes">clientes</option>
+    <option value="movimientos_inventario">movimientos_inventario</option>
+    <option value="marcas">marcas</option>
+    <option value="categorias">categorias</option>
+  </select>
+
+  <span class="count-chip" id="countChip">— registros</span>
+
+  <div class="ml-auto" style="display:flex;gap:8px">
+    <button class="btn-ghost" onclick="exportar()">
+      <i class="fa-solid fa-download"></i> Exportar
+    </button>
+  </div>
+</div>
+
+<!-- TABLE -->
+<div class="t-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th style="width:52px">#</th>
+        <th style="width:130px">Admin</th>
+        <th style="width:150px">Tabla</th>
+        <th style="width:110px">Acción</th>
+        <th style="width:180px">Valor anterior</th>
+        <th style="width:180px">Valor nuevo</th>
+        <th style="width:130px">IP</th>
+        <th style="width:110px">Fecha</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+
+  <!-- Empty state -->
+  <div class="empty-state" id="emptyState" style="display:none">
+    <div class="empty-icon"><i class="fa-solid fa-scroll"></i></div>
+    <strong style="color:var(--text)">Sin resultados</strong>
+    <span>No se encontraron registros con ese criterio.</span>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" id="paginationBar">
+    <span class="pag-info" id="pagInfo"></span>
+    <div class="pag-btns" id="pagBtns"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast">
+  <i class="fa-solid fa-circle-check"></i>
+  <span id="toastMsg"></span>
+</div>

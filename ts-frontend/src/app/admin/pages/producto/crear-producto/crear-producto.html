@@ -1,1 +1,262 @@
-<p>crear-producto works!</p>
+<div class="ph">
+  <button class="ph-back" onclick="goBack()" title="Volver">
+    <i class="fa-solid fa-arrow-left"></i>
+  </button>
+  <div>
+    <h1>Nuevo producto</h1>
+    <p>Completa los campos para agregar un producto al catálogo.</p>
+  </div>
+</div>
+
+<!-- FORM LAYOUT -->
+<div class="form-layout">
+
+  <!-- LEFT COLUMN -->
+  <div style="display:flex;flex-direction:column;gap:20px">
+
+    <!-- INFORMACIÓN GENERAL -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-head-icon"><i class="fa-solid fa-box"></i></div>
+        <h2>Información general</h2>
+      </div>
+      <div class="card-body">
+        <div class="form-grid" style="gap:18px">
+
+          <!-- Nombre -->
+          <div class="field">
+            <label>Nombre del producto <span class="req">*</span></label>
+            <input class="form-input" id="prd_nom" maxlength="120"
+              placeholder="Ej: Monitor ProArt PA278QV 27&quot;"
+              oninput="clearErr('prd_nom'); autoSku()">
+            <div class="field-err" id="err_prd_nom">
+              <i class="fa-solid fa-circle-exclamation"></i>
+              <span>El nombre es obligatorio.</span>
+            </div>
+          </div>
+
+          <!-- Descripción -->
+          <div class="field">
+            <label>Descripción <span class="lbl-sub">Opcional</span></label>
+            <textarea class="form-textarea" id="prd_des"
+              placeholder="Breve descripción del producto, características principales…"></textarea>
+          </div>
+
+          <!-- Cat + Marca -->
+          <div class="form-grid form-grid-2">
+            <div class="field">
+              <label>Categoría <span class="req">*</span></label>
+              <select class="form-select" id="cat_id" onchange="clearErr('cat_id'); autoSku()">
+                <option value="">Seleccionar…</option>
+                <option value="1">Periféricos</option>
+                <option value="2">Componentes</option>
+                <option value="3">Audio</option>
+                <option value="4">Monitores</option>
+              </select>
+              <div class="field-err" id="err_cat_id">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span>Selecciona una categoría.</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Marca <span class="req">*</span></label>
+              <select class="form-select" id="mar_id" onchange="clearErr('mar_id'); autoSku()">
+                <option value="">Seleccionar…</option>
+                <option value="1">ASUS</option>
+                <option value="2">Corsair</option>
+                <option value="3">NVIDIA</option>
+                <option value="4">Logitech</option>
+                <option value="5">Sennheiser</option>
+              </select>
+              <div class="field-err" id="err_mar_id">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span>Selecciona una marca.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- SKU (readonly, auto-generado) -->
+          <div class="field">
+            <label>
+              SKU
+              <span class="lbl-sub"><i class="fa-solid fa-lock" style="font-size:10px"></i> Auto-generado</span>
+            </label>
+            <div class="sku-wrap">
+              <input class="form-input readonly" id="prd_sku" readonly
+                placeholder="Se genera automáticamente…">
+              <button class="sku-regen" onclick="regenSku()" title="Regenerar SKU">
+                <i class="fa-solid fa-arrows-rotate"></i> Regenerar
+              </button>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:4px">
+              <i class="fa-regular fa-circle-question" style="margin-right:3px"></i>
+              El SKU se genera con base en la categoría, marca y nombre.
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- PRECIOS -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-head-icon"><i class="fa-solid fa-dollar-sign"></i></div>
+        <h2>Precios</h2>
+      </div>
+      <div class="card-body">
+        <div class="form-grid form-grid-2">
+          <div class="field">
+            <label>Precio de costo <span class="req">*</span></label>
+            <input class="form-input" id="prd_pre_com" type="number" min="0" step="0.01"
+              placeholder="0.00" oninput="clearErr('prd_pre_com'); calcMargen()">
+            <div class="field-err" id="err_prd_pre_com">
+              <i class="fa-solid fa-circle-exclamation"></i>
+              <span>Ingresa un precio de costo válido.</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Precio de venta <span class="req">*</span></label>
+            <input class="form-input" id="prd_pre_ven" type="number" min="0" step="0.01"
+              placeholder="0.00" oninput="clearErr('prd_pre_ven'); calcMargen()">
+            <div class="field-err" id="err_prd_pre_ven">
+              <i class="fa-solid fa-circle-exclamation"></i>
+              <span>Ingresa un precio de venta válido.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Margen preview -->
+        <div class="margin-preview" id="margenPreview" style="margin-top:14px">
+          <span class="mp-label">Margen de ganancia</span>
+          <span class="mp-val zero" id="margenVal">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVENTARIO -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-head-icon"><i class="fa-solid fa-warehouse"></i></div>
+        <h2>Inventario</h2>
+      </div>
+      <div class="card-body">
+        <div class="field" style="max-width:200px">
+          <label>Stock mínimo</label>
+          <input class="form-input" id="prd_stk_min" type="number" min="0" step="1"
+            value="5" placeholder="5">
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px">
+            Alerta cuando el stock baje de este valor.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCIONES -->
+    <div class="form-actions">
+      <button class="btn-ghost" onclick="goBack()">
+        <i class="fa-solid fa-xmark"></i> Cancelar
+      </button>
+      <button class="btn-primary" id="btnSave" onclick="guardar()">
+        <i class="fa-solid fa-floppy-disk"></i> Guardar producto
+      </button>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div style="display:flex;flex-direction:column;gap:20px">
+
+    <!-- IMAGEN -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-head-icon"><i class="fa-regular fa-image"></i></div>
+        <h2>Imagen del producto</h2>
+      </div>
+      <div class="card-body">
+
+        <!-- Drop zone -->
+        <div class="img-drop" id="imgDrop"
+          ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+          <input type="file" id="imgInput" accept="image/*" onchange="handleFile(this.files[0])">
+          <div class="img-drop-icon"><i class="fa-regular fa-image"></i></div>
+          <p><strong>Haz clic o arrastra</strong><br>una imagen aquí</p>
+          <p class="hint">PNG, JPG, WEBP — máx. 5 MB</p>
+        </div>
+
+        <!-- Preview -->
+        <div class="img-preview" id="imgPreview">
+          <img id="imgPreviewSrc" src="" alt="Preview">
+          <button class="img-preview-remove" onclick="removeImg()" title="Quitar imagen">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div style="font-size:11px;color:var(--text-muted);margin-top:10px;line-height:1.5">
+          Se recomienda imagen cuadrada de al menos 400×400 px con fondo blanco o transparente.
+        </div>
+      </div>
+    </div>
+
+    <!-- ESTADO -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-head-icon"><i class="fa-solid fa-toggle-on"></i></div>
+        <h2>Estado</h2>
+      </div>
+      <div class="card-body">
+        <div class="toggle-wrap">
+          <div>
+            <div class="tg-label" id="estLabel">Activo</div>
+            <div class="tg-sub">El producto es visible en el catálogo</div>
+          </div>
+          <div class="toggle on" id="estToggle" onclick="toggleEst()"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESUMEN -->
+    <div class="card" id="summaryCard" style="display:none">
+      <div class="card-head">
+        <div class="card-head-icon"><i class="fa-solid fa-eye"></i></div>
+        <h2>Vista previa</h2>
+      </div>
+      <div class="card-body">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+          <div style="width:44px;height:44px;border-radius:10px;background:var(--surface-3);border:1px solid var(--border-strong);display:grid;place-items:center;font-size:20px;overflow:hidden;" id="sumImg">📦</div>
+          <div>
+            <div style="font-weight:600;font-size:14px" id="sumNom">—</div>
+            <div style="font-size:11px;color:var(--text-muted);font-family:monospace" id="sumSku">—</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;justify-content:space-between;font-size:12px">
+            <span style="color:var(--text-muted)">Categoría</span>
+            <span id="sumCat" style="color:var(--text-sub)">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:12px">
+            <span style="color:var(--text-muted)">Marca</span>
+            <span id="sumMar" style="color:var(--text-sub)">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;padding-top:6px;border-top:1px solid var(--border)">
+            <span style="color:var(--text-muted)">Precio venta</span>
+            <span id="sumPre" style="color:var(--success);font-weight:600;font-family:monospace">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SAVING OVERLAY -->
+<div id="savingOverlay">
+  <div class="spinner"></div>
+  <div class="saving-label">Guardando producto…</div>
+</div>
+
+<!-- TOAST -->
+<div id="toast">
+  <i class="fa-solid fa-circle-check"></i>
+  <span id="toastMsg"></span>
+</div>
