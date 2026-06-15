@@ -2,13 +2,13 @@ import db from '../config/db.js';
 import oracledb from 'oracledb';
 import { cursorToObjects } from "../utils/cursor.js";
 
-const PagoModel = {
+const EstadoPedidoModel = {
 
   getAll: async () => {
     const conn = await db.getConnection();
     try {
       const result = await conn.execute(
-        `BEGIN SP_PAGOS_GETALL(:cursor); END;`,
+        `BEGIN SP_ESTADOS_GETALL(:cursor); END;`,
         { cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
       );
@@ -20,7 +20,7 @@ const PagoModel = {
     const conn = await db.getConnection();
     try {
       const result = await conn.execute(
-        `BEGIN SP_PAGOS_GETBYID(:id, :cursor); END;`,
+        `BEGIN SP_ESTADOS_GETBYID(:id, :cursor); END;`,
         { id: { val: Number(id), type: oracledb.NUMBER }, cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
       );
@@ -29,32 +29,14 @@ const PagoModel = {
     } finally { await conn.close(); }
   },
 
-  getByPedido: async (ped_id) => {
+  create: async ({ epd_nom, epd_est }) => {
     const conn = await db.getConnection();
     try {
       const result = await conn.execute(
-        `BEGIN SP_PAGOS_GETBYPEDIDO(:ped_id, :cursor); END;`,
-        { ped_id: { val: Number(ped_id), type: oracledb.NUMBER }, cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
-        { outFormat: oracledb.OUT_FORMAT_OBJECT }
-      );
-      const rows = await cursorToObjects(result.outBinds.cursor);
-      return rows[0] || null;
-    } finally { await conn.close(); }
-  },
-
-  create: async ({ ped_id, mpg_id, isp_id, pag_mon, pag_ref, pag_con, pag_est }) => {
-    const conn = await db.getConnection();
-    try {
-      const result = await conn.execute(
-        `BEGIN SP_PAGOS_CREATE(:ped_id, :mpg_id, :isp_id, :mon, :ref, :con, :est, :cursor); END;`,
+        `BEGIN SP_ESTADOS_CREATE(:nom, :est, :cursor); END;`,
         {
-          ped_id: { val: Number(ped_id), type: oracledb.NUMBER },
-          mpg_id: { val: Number(mpg_id), type: oracledb.NUMBER },
-          isp_id: { val: isp_id ? Number(isp_id) : null, type: oracledb.NUMBER },
-          mon: { val: Number(pag_mon), type: oracledb.NUMBER },
-          ref: { val: pag_ref, type: oracledb.STRING },
-          con: { val: pag_con, type: oracledb.STRING },
-          est: { val: pag_est, type: oracledb.STRING },
+          nom: { val: epd_nom, type: oracledb.STRING },
+          est: { val: epd_est, type: oracledb.STRING },
           cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT }
         },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
@@ -64,20 +46,15 @@ const PagoModel = {
     } finally { await conn.close(); }
   },
 
-  update: async (id, { ped_id, mpg_id, isp_id, pag_mon, pag_ref, pag_con, pag_est }) => {
+  update: async (id, { epd_nom, epd_est }) => {
     const conn = await db.getConnection();
     try {
       const result = await conn.execute(
-        `BEGIN SP_PAGOS_UPDATE(:id, :ped_id, :mpg_id, :isp_id, :mon, :ref, :con, :est, :cursor); END;`,
+        `BEGIN SP_ESTADOS_UPDATE(:id, :nom, :est, :cursor); END;`,
         {
           id: { val: Number(id), type: oracledb.NUMBER },
-          ped_id: { val: Number(ped_id), type: oracledb.NUMBER },
-          mpg_id: { val: Number(mpg_id), type: oracledb.NUMBER },
-          isp_id: { val: isp_id ? Number(isp_id) : null, type: oracledb.NUMBER },
-          mon: { val: Number(pag_mon), type: oracledb.NUMBER },
-          ref: { val: pag_ref, type: oracledb.STRING },
-          con: { val: pag_con, type: oracledb.STRING },
-          est: { val: pag_est, type: oracledb.STRING },
+          nom: { val: epd_nom, type: oracledb.STRING },
+          est: { val: epd_est, type: oracledb.STRING },
           cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT }
         },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
@@ -91,7 +68,7 @@ const PagoModel = {
     const conn = await db.getConnection();
     try {
       const result = await conn.execute(
-        `BEGIN SP_PAGOS_DELETE(:id, :cursor); END;`,
+        `BEGIN SP_ESTADOS_DELETE(:id, :cursor); END;`,
         { id: { val: Number(id), type: oracledb.NUMBER }, cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
       );
@@ -102,4 +79,4 @@ const PagoModel = {
 
 };
 
-export default PagoModel;
+export default EstadoPedidoModel;

@@ -1,8 +1,9 @@
 import express from 'express';
-import * as C from '../controllers/pago.controller.js';
+import * as C from '../controllers/detalle_pedido.controller.js';
 const router = express.Router();
 router.get('/', C.getAll);
 router.get('/:id', C.getById);
+router.get('/pedido/:ped_id', C.getByPedido);
 router.post('/', C.create);
 router.put('/:id', C.update);
 router.delete('/:id', C.remove);

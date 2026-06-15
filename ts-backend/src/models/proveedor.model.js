@@ -1,55 +1,92 @@
-import db from "../config/db.js";
+import db from '../config/db.js';
+import oracledb from 'oracledb';
+import { cursorToObjects } from "../utils/cursor.js";
 
 const ProveedorModel = {
-  getAll: async () =>
-    (await db.query(`SELECT * FROM ADMIN."proveedores" ORDER BY 1 ASC`))
-      .rows,
-  getById: async (id) =>
-    (await db.query(`SELECT * FROM ADMIN."proveedores" WHERE pro_id=:1`, [id]))
-      .rows[0],
-  create: async ({
-    pro_emp,
-    pro_ruc,
-    pro_con,
-    pro_tel,
-    pro_cor,
-    pro_dir,
-    pro_est,
-  }) => {
-    await db.query(
-      `INSERT INTO ADMIN."proveedores" (pro_id,pro_emp,pro_ruc,pro_con,pro_tel,pro_cor,pro_dir,pro_est)
-       VALUES (ADMIN."proveedores_seq".NEXTVAL,:1,:2,:3,:4,:5,:6,:7)`,
-      [pro_emp, pro_ruc, pro_con, pro_tel, pro_cor, pro_dir, pro_est],
-    );
-    return (
-      await db.query(
-        `SELECT * FROM ADMIN."proveedores" WHERE pro_id=(SELECT MAX(pro_id) FROM ADMIN."proveedores")`,
-      )
-    ).rows[0];
+
+  getAll: async () => {
+    const conn = await db.getConnection();
+    try {
+      const result = await conn.execute(
+        `BEGIN SP_PROVEEDORES_GETALL(:cursor); END;`,
+        { cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      return await cursorToObjects(result.outBinds.cursor);
+    } finally { await conn.close(); }
   },
 
-  update: async (
-    id,
-    { pro_emp, pro_ruc, pro_con, pro_tel, pro_cor, pro_dir, pro_est },
-  ) => {
-    await db.query(
-      `UPDATE ADMIN."proveedores" SET pro_emp=:1,pro_ruc=:2,pro_con=:3,pro_tel=:4,pro_cor=:5,pro_dir=:6,pro_est=:7 WHERE pro_id=:8`,
-      [pro_emp, pro_ruc, pro_con, pro_tel, pro_cor, pro_dir, pro_est, id],
-    );
-    return (
-      await db.query(`SELECT * FROM ADMIN."proveedores" WHERE pro_id=:1`, [id])
-    ).rows[0];
+  getById: async (id) => {
+    const conn = await db.getConnection();
+    try {
+      const result = await conn.execute(
+        `BEGIN SP_PROVEEDORES_GETBYID(:id, :cursor); END;`,
+        { id: { val: Number(id), type: oracledb.NUMBER }, cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      const rows = await cursorToObjects(result.outBinds.cursor);
+      return rows[0] || null;
+    } finally { await conn.close(); }
+  },
+
+  create: async ({ pro_emp, pro_ruc, pro_con, pro_tel, pro_cor, pro_dir, pro_est }) => {
+    const conn = await db.getConnection();
+    try {
+      const result = await conn.execute(
+        `BEGIN SP_PROVEEDORES_CREATE(:emp, :ruc, :con, :tel, :cor, :dir, :est, :cursor); END;`,
+        {
+          emp: { val: pro_emp, type: oracledb.STRING },
+          ruc: { val: pro_ruc, type: oracledb.STRING },
+          con: { val: pro_con, type: oracledb.STRING },
+          tel: { val: pro_tel, type: oracledb.STRING },
+          cor: { val: pro_cor, type: oracledb.STRING },
+          dir: { val: pro_dir, type: oracledb.STRING },
+          est: { val: pro_est, type: oracledb.STRING },
+          cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT }
+        },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      const rows = await cursorToObjects(result.outBinds.cursor);
+      return rows[0] || null;
+    } finally { await conn.close(); }
+  },
+
+  update: async (id, { pro_emp, pro_ruc, pro_con, pro_tel, pro_cor, pro_dir, pro_est }) => {
+    const conn = await db.getConnection();
+    try {
+      const result = await conn.execute(
+        `BEGIN SP_PROVEEDORES_UPDATE(:id, :emp, :ruc, :con, :tel, :cor, :dir, :est, :cursor); END;`,
+        {
+          id: { val: Number(id), type: oracledb.NUMBER },
+          emp: { val: pro_emp, type: oracledb.STRING },
+          ruc: { val: pro_ruc, type: oracledb.STRING },
+          con: { val: pro_con, type: oracledb.STRING },
+          tel: { val: pro_tel, type: oracledb.STRING },
+          cor: { val: pro_cor, type: oracledb.STRING },
+          dir: { val: pro_dir, type: oracledb.STRING },
+          est: { val: pro_est, type: oracledb.STRING },
+          cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT }
+        },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      const rows = await cursorToObjects(result.outBinds.cursor);
+      return rows[0] || null;
+    } finally { await conn.close(); }
   },
 
   remove: async (id) => {
-    const r = await db.query(
-      `SELECT * FROM ADMIN."proveedores" WHERE pro_id=:1`,
-      [id],
-    );
-    if (!r.rows[0]) return null;
-    await db.query(`DELETE FROM ADMIN."proveedores" WHERE pro_id=:1`, [id]);
-    return r.rows[0];
+    const conn = await db.getConnection();
+    try {
+      const result = await conn.execute(
+        `BEGIN SP_PROVEEDORES_DELETE(:id, :cursor); END;`,
+        { id: { val: Number(id), type: oracledb.NUMBER }, cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      const rows = await cursorToObjects(result.outBinds.cursor);
+      return rows[0] || null;
+    } finally { await conn.close(); }
   },
+
 };
 
 export default ProveedorModel;

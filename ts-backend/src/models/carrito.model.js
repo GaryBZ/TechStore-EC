@@ -1,53 +1,114 @@
-import db from '../config/db.js';
+import db from "../config/db.js";
+import oracledb from "oracledb";
+import { cursorToObjects } from "../utils/cursor.js";
 
 const CarritoModel = {
-
   getAll: async () => {
-    const r = await db.query(`SELECT * FROM ADMIN."carrito" ORDER BY 1 ASC`);
-    return r.rows;
+    const conn = await db.getConnection();
+    try {
+      const result = await conn.execute(
+        `BEGIN SP_CARRITO_GETALL(:cursor); END;`,
+        { cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT },
+      );
+      return await cursorToObjects(result.outBinds.cursor);
+    } finally {
+      await conn.close();
+    }
   },
 
   getById: async (id) => {
-    const r = await db.query(`SELECT * FROM ADMIN."carrito" WHERE car_id = :1`, [id]);
-    return r.rows[0];
+    const conn = await db.getConnection();
+    try {
+      const result = await conn.execute(
+        `BEGIN SP_CARRITO_GETBYID(:id, :cursor); END;`,
+        {
+          id: { val: Number(id), type: oracledb.NUMBER },
+          cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT },
+        },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT },
+      );
+      const rows = await cursorToObjects(result.outBinds.cursor);
+      return rows[0] || null;
+    } finally {
+      await conn.close();
+    }
   },
 
   getByCliente: async (cli_id) => {
-    const r = await db.query(
-      `SELECT * FROM ADMIN."carrito" WHERE cli_id = :1 ORDER BY car_id ASC`,
-      [cli_id]
-    );
-    return r.rows;
+    const conn = await db.getConnection();
+    try {
+      const result = await conn.execute(
+        `BEGIN SP_CARRITO_GETBYCLIENTE(:cli_id, :cursor); END;`,
+        {
+          cli_id: { val: Number(cli_id), type: oracledb.NUMBER },
+          cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT },
+        },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT },
+      );
+      const rows = await cursorToObjects(result.outBinds.cursor);
+      return rows[0] || null;
+    } finally {
+      await conn.close();
+    }
   },
 
   create: async ({ cli_id, car_est }) => {
-    await db.query(
-      `INSERT INTO ADMIN."carrito" (car_id, cli_id, car_fec_cre, car_est)
-       VALUES (ADMIN."carrito_seq".NEXTVAL, :1, SYSTIMESTAMP, :2)`,
-      [cli_id, car_est]
-    );
-    const r = await db.query(
-      `SELECT * FROM ADMIN."carrito" WHERE car_id = (SELECT MAX(car_id) FROM ADMIN."carrito")`
-    );
-    return r.rows[0];
+    const conn = await db.getConnection();
+    try {
+      const result = await conn.execute(
+        `BEGIN SP_CARRITO_CREATE(:cli_id, :est, :cursor); END;`,
+        {
+          cli_id: { val: Number(cli_id), type: oracledb.NUMBER },
+          est: { val: car_est, type: oracledb.STRING },
+          cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT },
+        },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT },
+      );
+      const rows = await cursorToObjects(result.outBinds.cursor);
+      return rows[0] || null;
+    } finally {
+      await conn.close();
+    }
   },
 
   update: async (id, { cli_id, car_est }) => {
-    await db.query(
-      `UPDATE ADMIN."carrito" SET cli_id=:1, car_est=:2 WHERE car_id=:3`,
-      [cli_id, car_est, id]
-    );
-    const r = await db.query(`SELECT * FROM ADMIN."carrito" WHERE car_id = :1`, [id]);
-    return r.rows[0];
+    const conn = await db.getConnection();
+    try {
+      const result = await conn.execute(
+        `BEGIN SP_CARRITO_UPDATE(:id, :cli_id, :est, :cursor); END;`,
+        {
+          id: { val: Number(id), type: oracledb.NUMBER },
+          cli_id: { val: Number(cli_id), type: oracledb.NUMBER },
+          est: { val: car_est, type: oracledb.STRING },
+          cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT },
+        },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT },
+      );
+      const rows = await cursorToObjects(result.outBinds.cursor);
+      return rows[0] || null;
+    } finally {
+      await conn.close();
+    }
   },
 
   remove: async (id) => {
-    const r = await db.query(`SELECT * FROM ADMIN."carrito" WHERE car_id = :1`, [id]);
-    if (!r.rows[0]) return null;
-    await db.query(`DELETE FROM ADMIN."carrito" WHERE car_id = :1`, [id]);
-    return r.rows[0];
+    const conn = await db.getConnection();
+    try {
+      const result = await conn.execute(
+        `BEGIN SP_CARRITO_DELETE(:id, :cursor); END;`,
+        {
+          id: { val: Number(id), type: oracledb.NUMBER },
+          cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT },
+        },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT },
+      );
+      const rows = await cursorToObjects(result.outBinds.cursor);
+      return rows[0] || null;
+    } finally {
+      await conn.close();
+    }
   },
-
 };
 
 export default CarritoModel;

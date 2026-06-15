@@ -1,4 +1,5 @@
 import db from '../config/db.js';
+import { cursorToObjects } from "../utils/cursor.js";
 
 const AuthModel = {
 

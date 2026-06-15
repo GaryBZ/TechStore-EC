@@ -1,14 +1,16 @@
 import oracledb from 'oracledb';
+import dotenv from 'dotenv';
+dotenv.config({ path: '/home/oracle/b2/.env' });
 
-oracledb.initOracleClient({ libDir: '/u01/app/oracle/product/19.0.0/dbhome_1/lib' });
+oracledb.initOracleClient({ libDir: process.env.ORACLE_LIB });
 
 let pool;
 
 export const initPool = async () => {
   pool = await oracledb.createPool({
-    user: 'ADMIN',
-    password: 'Admin123',
-    connectString: 'localhost:1521/PDBECOMMERCE',
+    user: process.env.ORACLE_USER,
+    password: process.env.ORACLE_PASSWORD,
+    connectString: process.env.ORACLE_CONNECT,
     poolMin: 2,
     poolMax: 10,
     poolIncrement: 1,
@@ -37,6 +39,10 @@ const db = {
     } finally {
       await conn.close();
     }
+  },
+
+  getConnection: async () => {
+    return await pool.getConnection();
   },
 };
 

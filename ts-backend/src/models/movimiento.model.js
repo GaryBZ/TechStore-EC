@@ -2,13 +2,13 @@ import db from '../config/db.js';
 import oracledb from 'oracledb';
 import { cursorToObjects } from "../utils/cursor.js";
 
-const UsuarioModel = {
+const MovimientoModel = {
 
   getAll: async () => {
     const conn = await db.getConnection();
     try {
       const result = await conn.execute(
-        `BEGIN SP_USUARIOS_GETALL(:cursor); END;`,
+        `BEGIN SP_MOVIMIENTOS_GETALL(:cursor); END;`,
         { cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
       );
@@ -20,7 +20,7 @@ const UsuarioModel = {
     const conn = await db.getConnection();
     try {
       const result = await conn.execute(
-        `BEGIN SP_USUARIOS_GETBYID(:id, :cursor); END;`,
+        `BEGIN SP_MOVIMIENTOS_GETBYID(:id, :cursor); END;`,
         { id: { val: Number(id), type: oracledb.NUMBER }, cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
       );
@@ -29,12 +29,12 @@ const UsuarioModel = {
     } finally { await conn.close(); }
   },
 
-  getByRol: async (rol_id) => {
+  getByProducto: async (prd_id) => {
     const conn = await db.getConnection();
     try {
       const result = await conn.execute(
-        `BEGIN SP_USUARIOS_GETBYROL(:rol_id, :cursor); END;`,
-        { rol_id: { val: Number(rol_id), type: oracledb.NUMBER }, cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
+        `BEGIN SP_MOVIMIENTOS_GETBYPRODUCTO(:prd_id, :cursor); END;`,
+        { prd_id: { val: Number(prd_id), type: oracledb.NUMBER }, cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
       );
       const rows = await cursorToObjects(result.outBinds.cursor);
@@ -42,32 +42,19 @@ const UsuarioModel = {
     } finally { await conn.close(); }
   },
 
-  getByEmail: async (email) => {
+  create: async ({ prd_id, usu_id, ped_id, mov_tip, mov_can, mov_mot, mov_est }) => {
     const conn = await db.getConnection();
     try {
       const result = await conn.execute(
-        `BEGIN SP_USUARIOS_GETBYEMAIL(:email, :cursor); END;`,
-        { email: { val: email, type: oracledb.STRING }, cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
-        { outFormat: oracledb.OUT_FORMAT_OBJECT }
-      );
-      const rows = await cursorToObjects(result.outBinds.cursor);
-      return rows[0] || null;
-    } finally { await conn.close(); }
-  },
-
-  create: async ({ rol_id, usu_nom, usu_ape, usu_cor, usu_pas, usu_tel, usu_est }) => {
-    const conn = await db.getConnection();
-    try {
-      const result = await conn.execute(
-        `BEGIN SP_USUARIOS_CREATE(:rol_id, :nom, :ape, :cor, :pas, :tel, :est, :cursor); END;`,
+        `BEGIN SP_MOVIMIENTOS_CREATE(:prd_id, :usu_id, :ped_id, :tip, :can, :mot, :est, :cursor); END;`,
         {
-          rol_id: { val: Number(rol_id), type: oracledb.NUMBER },
-          nom: { val: usu_nom, type: oracledb.STRING },
-          ape: { val: usu_ape, type: oracledb.STRING },
-          cor: { val: usu_cor, type: oracledb.STRING },
-          pas: { val: usu_pas, type: oracledb.STRING },
-          tel: { val: usu_tel, type: oracledb.STRING },
-          est: { val: usu_est, type: oracledb.STRING },
+          prd_id: { val: Number(prd_id), type: oracledb.NUMBER },
+          usu_id: { val: Number(usu_id), type: oracledb.NUMBER },
+          ped_id: { val: ped_id ? Number(ped_id) : null, type: oracledb.NUMBER },
+          tip: { val: mov_tip, type: oracledb.STRING },
+          can: { val: Number(mov_can), type: oracledb.NUMBER },
+          mot: { val: mov_mot, type: oracledb.STRING },
+          est: { val: mov_est, type: oracledb.STRING },
           cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT }
         },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
@@ -77,19 +64,20 @@ const UsuarioModel = {
     } finally { await conn.close(); }
   },
 
-  update: async (id, { rol_id, usu_nom, usu_ape, usu_cor, usu_tel, usu_est }) => {
+  update: async (id, { prd_id, usu_id, ped_id, mov_tip, mov_can, mov_mot, mov_est }) => {
     const conn = await db.getConnection();
     try {
       const result = await conn.execute(
-        `BEGIN SP_USUARIOS_UPDATE(:id, :rol_id, :nom, :ape, :cor, :tel, :est, :cursor); END;`,
+        `BEGIN SP_MOVIMIENTOS_UPDATE(:id, :prd_id, :usu_id, :ped_id, :tip, :can, :mot, :est, :cursor); END;`,
         {
           id: { val: Number(id), type: oracledb.NUMBER },
-          rol_id: { val: Number(rol_id), type: oracledb.NUMBER },
-          nom: { val: usu_nom, type: oracledb.STRING },
-          ape: { val: usu_ape, type: oracledb.STRING },
-          cor: { val: usu_cor, type: oracledb.STRING },
-          tel: { val: usu_tel, type: oracledb.STRING },
-          est: { val: usu_est, type: oracledb.STRING },
+          prd_id: { val: Number(prd_id), type: oracledb.NUMBER },
+          usu_id: { val: Number(usu_id), type: oracledb.NUMBER },
+          ped_id: { val: ped_id ? Number(ped_id) : null, type: oracledb.NUMBER },
+          tip: { val: mov_tip, type: oracledb.STRING },
+          can: { val: Number(mov_can), type: oracledb.NUMBER },
+          mot: { val: mov_mot, type: oracledb.STRING },
+          est: { val: mov_est, type: oracledb.STRING },
           cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT }
         },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
@@ -103,7 +91,7 @@ const UsuarioModel = {
     const conn = await db.getConnection();
     try {
       const result = await conn.execute(
-        `BEGIN SP_USUARIOS_DELETE(:id, :cursor); END;`,
+        `BEGIN SP_MOVIMIENTOS_DELETE(:id, :cursor); END;`,
         { id: { val: Number(id), type: oracledb.NUMBER }, cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
       );
@@ -114,4 +102,4 @@ const UsuarioModel = {
 
 };
 
-export default UsuarioModel;
+export default MovimientoModel;

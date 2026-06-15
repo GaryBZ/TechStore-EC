@@ -2,13 +2,13 @@ import db from '../config/db.js';
 import oracledb from 'oracledb';
 import { cursorToObjects } from "../utils/cursor.js";
 
-const UsuarioModel = {
+const DetallePedidoModel = {
 
   getAll: async () => {
     const conn = await db.getConnection();
     try {
       const result = await conn.execute(
-        `BEGIN SP_USUARIOS_GETALL(:cursor); END;`,
+        `BEGIN SP_DETALLE_PEDIDO_GETALL(:cursor); END;`,
         { cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
       );
@@ -20,7 +20,7 @@ const UsuarioModel = {
     const conn = await db.getConnection();
     try {
       const result = await conn.execute(
-        `BEGIN SP_USUARIOS_GETBYID(:id, :cursor); END;`,
+        `BEGIN SP_DETALLE_PEDIDO_GETBYID(:id, :cursor); END;`,
         { id: { val: Number(id), type: oracledb.NUMBER }, cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
       );
@@ -29,12 +29,12 @@ const UsuarioModel = {
     } finally { await conn.close(); }
   },
 
-  getByRol: async (rol_id) => {
+  getByPedido: async (ped_id) => {
     const conn = await db.getConnection();
     try {
       const result = await conn.execute(
-        `BEGIN SP_USUARIOS_GETBYROL(:rol_id, :cursor); END;`,
-        { rol_id: { val: Number(rol_id), type: oracledb.NUMBER }, cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
+        `BEGIN SP_DETALLE_PEDIDO_GETBYPEDIDO(:ped_id, :cursor); END;`,
+        { ped_id: { val: Number(ped_id), type: oracledb.NUMBER }, cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
       );
       const rows = await cursorToObjects(result.outBinds.cursor);
@@ -42,32 +42,18 @@ const UsuarioModel = {
     } finally { await conn.close(); }
   },
 
-  getByEmail: async (email) => {
+  create: async ({ ped_id, prd_id, dpe_can, dpe_pre_uni, dpe_sub, dpe_est }) => {
     const conn = await db.getConnection();
     try {
       const result = await conn.execute(
-        `BEGIN SP_USUARIOS_GETBYEMAIL(:email, :cursor); END;`,
-        { email: { val: email, type: oracledb.STRING }, cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
-        { outFormat: oracledb.OUT_FORMAT_OBJECT }
-      );
-      const rows = await cursorToObjects(result.outBinds.cursor);
-      return rows[0] || null;
-    } finally { await conn.close(); }
-  },
-
-  create: async ({ rol_id, usu_nom, usu_ape, usu_cor, usu_pas, usu_tel, usu_est }) => {
-    const conn = await db.getConnection();
-    try {
-      const result = await conn.execute(
-        `BEGIN SP_USUARIOS_CREATE(:rol_id, :nom, :ape, :cor, :pas, :tel, :est, :cursor); END;`,
+        `BEGIN SP_DETALLE_PEDIDO_CREATE(:ped_id, :prd_id, :can, :pre_uni, :sub, :est, :cursor); END;`,
         {
-          rol_id: { val: Number(rol_id), type: oracledb.NUMBER },
-          nom: { val: usu_nom, type: oracledb.STRING },
-          ape: { val: usu_ape, type: oracledb.STRING },
-          cor: { val: usu_cor, type: oracledb.STRING },
-          pas: { val: usu_pas, type: oracledb.STRING },
-          tel: { val: usu_tel, type: oracledb.STRING },
-          est: { val: usu_est, type: oracledb.STRING },
+          ped_id: { val: Number(ped_id), type: oracledb.NUMBER },
+          prd_id: { val: Number(prd_id), type: oracledb.NUMBER },
+          can: { val: Number(dpe_can), type: oracledb.NUMBER },
+          pre_uni: { val: Number(dpe_pre_uni), type: oracledb.NUMBER },
+          sub: { val: Number(dpe_sub), type: oracledb.NUMBER },
+          est: { val: dpe_est, type: oracledb.STRING },
           cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT }
         },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
@@ -77,19 +63,19 @@ const UsuarioModel = {
     } finally { await conn.close(); }
   },
 
-  update: async (id, { rol_id, usu_nom, usu_ape, usu_cor, usu_tel, usu_est }) => {
+  update: async (id, { ped_id, prd_id, dpe_can, dpe_pre_uni, dpe_sub, dpe_est }) => {
     const conn = await db.getConnection();
     try {
       const result = await conn.execute(
-        `BEGIN SP_USUARIOS_UPDATE(:id, :rol_id, :nom, :ape, :cor, :tel, :est, :cursor); END;`,
+        `BEGIN SP_DETALLE_PEDIDO_UPDATE(:id, :ped_id, :prd_id, :can, :pre_uni, :sub, :est, :cursor); END;`,
         {
           id: { val: Number(id), type: oracledb.NUMBER },
-          rol_id: { val: Number(rol_id), type: oracledb.NUMBER },
-          nom: { val: usu_nom, type: oracledb.STRING },
-          ape: { val: usu_ape, type: oracledb.STRING },
-          cor: { val: usu_cor, type: oracledb.STRING },
-          tel: { val: usu_tel, type: oracledb.STRING },
-          est: { val: usu_est, type: oracledb.STRING },
+          ped_id: { val: Number(ped_id), type: oracledb.NUMBER },
+          prd_id: { val: Number(prd_id), type: oracledb.NUMBER },
+          can: { val: Number(dpe_can), type: oracledb.NUMBER },
+          pre_uni: { val: Number(dpe_pre_uni), type: oracledb.NUMBER },
+          sub: { val: Number(dpe_sub), type: oracledb.NUMBER },
+          est: { val: dpe_est, type: oracledb.STRING },
           cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT }
         },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
@@ -103,7 +89,7 @@ const UsuarioModel = {
     const conn = await db.getConnection();
     try {
       const result = await conn.execute(
-        `BEGIN SP_USUARIOS_DELETE(:id, :cursor); END;`,
+        `BEGIN SP_DETALLE_PEDIDO_DELETE(:id, :cursor); END;`,
         { id: { val: Number(id), type: oracledb.NUMBER }, cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
       );
@@ -114,4 +100,4 @@ const UsuarioModel = {
 
 };
 
-export default UsuarioModel;
+export default DetallePedidoModel;

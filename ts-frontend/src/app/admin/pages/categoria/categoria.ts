@@ -1,107 +1,55 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
-interface Category {
-  id: number;
-  name: string;
-  products: number;
-}
+import { CategoriaModel } from '../../../core/models/categoria.model';
+import { CategoriaService } from '../../../core/services/categoria.service';
 
 @Component({
   selector: 'app-categoria',
   imports: [FormsModule, CommonModule],
   templateUrl: './categoria.html',
   styleUrl: './categoria.css',
+  changeDetection: ChangeDetectionStrategy.Default,
 })
-export class Categoria {
-  categories: Category[] = [
-    { id: 1, name: 'Gaming', products: 14 },
-    { id: 2, name: 'Audio', products: 9 },
-    { id: 3, name: 'Mouse', products: 6 },
-    { id: 4, name: 'Teclado', products: 11 },
-    { id: 5, name: 'CPU', products: 8 },
-    { id: 6, name: 'GPU', products: 5 },
-    { id: 7, name: 'RAM', products: 3 },
-    { id: 8, name: 'SSD', products: 4 },
-    { id: 9, name: '4k', products: 2 },
-  ];
-
-  nextId = 11;
+export class Categoria implements OnInit {
+  categories: CategoriaModel[] = [];
   editingId: number | null = null;
-  confirmingId: number | null = null;
-
   search = '';
   newBrand = '';
   editBrand = '';
-
   addOpen = false;
+  loading = false;
 
-  get filteredCategories(): Category[] {
-    return this.categories.filter((b) => b.name.toLowerCase().includes(this.search.toLowerCase()));
+  constructor(
+    private categoriaService: CategoriaService,
+    private cdr: ChangeDetectorRef,
+  ) {}
+
+  ngOnInit(): void {
+    this.loadCategorias();
   }
 
-  saveBrand(): void {
-    const value = this.newBrand.trim();
-
-    if (!value) {
-      alert('El nombre no puede estar vacío');
-      return;
-    }
-
-    if (this.categories.some((b) => b.name.toLowerCase() === value.toLowerCase())) {
-      alert('La Categoria ya existe');
-      return;
-    }
-
-    this.categories.unshift({
-      id: this.nextId++,
-      name: value,
-      products: 0,
+  loadCategorias(): void {
+    this.categoriaService.getAll().subscribe({
+      next: (data) => {
+        this.categories = data;
+        this.cdr.detectChanges(); // <- fuerza renderizado
+      },
+      error: (err) => {
+        console.error('Error cargando categorías', err);
+      },
     });
-
-    this.newBrand = '';
-    this.addOpen = false;
   }
 
-  startEdit(brand: Category): void {
-    this.addOpen = false;
-
-    this.editingId = brand.id;
-    this.editBrand = brand.name;
-  }
-
-  saveEdit(id: number): void {
-    const value = this.editBrand.trim();
-
-    if (!value) return;
-
-    const exists = this.categories.some(
-      (b) => b.id !== id && b.name.toLowerCase() === value.toLowerCase(),
+  get filteredCategories(): CategoriaModel[] {
+    return this.categories.filter(
+      (c) => c?.cat_nom && c.cat_nom.toLowerCase().includes(this.search.toLowerCase()),
     );
+  }
 
-    if (exists) {
-      alert('La Categoria ya existe');
-      return;
-    }
-
-    const brand = this.categories.find((b) => b.id === id);
-
-    if (brand) {
-      brand.name = this.editBrand.trim();
-    }
-
+  openAdd(): void {
     this.cancelEdit();
-  }
-
-  startConfirm(id: number): void {
-    this.confirmingId = id;
-  }
-
-  deleteBrand(id: number): void {
-    this.categories = this.categories.filter((brand) => brand.id !== id);
-
-    this.confirmingId = null;
+    this.addOpen = true;
   }
 
   cancelAdd(): void {
@@ -109,13 +57,74 @@ export class Categoria {
     this.newBrand = '';
   }
 
+  saveBrand(): void {
+    const value = this.newBrand.trim();
+    if (!value) {
+      alert('El nombre no puede estar vacío');
+      return;
+    }
+
+    this.categoriaService.create({ cat_nom: value, cat_des: null, cat_est: 'A' }).subscribe({
+      next: (data) => {
+        if (data) this.categories.unshift(data);
+        this.newBrand = '';
+        this.addOpen = false;
+        this.showToast('Categoría creada');
+        this.cdr.detectChanges(); // <- agregar
+      },
+      error: (err) => alert(err.error?.message || 'Error al crear'),
+    });
+  }
+
+  startEdit(categoria: CategoriaModel): void {
+    this.addOpen = false;
+    this.editingId = categoria.cat_id;
+    this.editBrand = categoria.cat_nom;
+  }
+
+  saveEdit(id: number): void {
+    const value = this.editBrand.trim();
+    if (!value) return;
+
+    this.categoriaService.update(id, { cat_nom: value }).subscribe({
+      next: (data) => {
+        if (data) {
+          const i = this.categories.findIndex((c) => c.cat_id === id);
+          if (i !== -1) this.categories[i] = data;
+        }
+        this.cancelEdit();
+        this.showToast('Categoría actualizada');
+        this.cdr.detectChanges(); // <- agregar
+      },
+      error: (err) => alert(err.error?.message || 'Error al actualizar'),
+    });
+  }
+
   cancelEdit(): void {
     this.editingId = null;
     this.editBrand = '';
   }
 
-  openAdd(): void {
-    this.cancelEdit();
-    this.addOpen = true;
+  deleteBrand(id: number): void {
+    if (!confirm('¿Eliminar esta categoría?')) return;
+
+    this.categoriaService.remove(id).subscribe({
+      next: () => {
+        this.categories = this.categories.filter((c) => c.cat_id !== id);
+        this.showToast('Categoría eliminada');
+        this.cdr.detectChanges(); // <- agregar
+      },
+      error: (err) => alert(err.error?.message || 'Error al eliminar'),
+    });
+  }
+
+  showToast(msg: string): void {
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+    if (toast && toastMsg) {
+      toastMsg.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
   }
 }

@@ -6,12 +6,17 @@ import categoriaRoutes from './routes/categoria.routes.js';
 import productoRoutes from './routes/producto.routes.js';
 import clienteRoutes from './routes/cliente.routes.js';
 import proveedorRoutes from './routes/proveedor.routes.js';
-
 import authRoutes from './routes/auth.routes.js';
 import carritoRoutes from './routes/carrito.routes.js';
 import inventarioRoutes from './routes/inventario.routes.js';
 import pedidoRoutes from './routes/pedido.routes.js';
 import usuarioRoutes from './routes/usuario.routes.js';
+import estadoPedidoRoutes from './routes/estado_pedido.routes.js';
+import rolRoutes from './routes/rol.routes.js';
+import pagoRoutes from './routes/pago.routes.js';
+import movimientoRoutes from './routes/movimiento.routes.js';
+import detalleCarritoRoutes from './routes/detalle_carrito.routes.js';
+import detallePedidoRoutes from './routes/detalle_pedido.routes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,13 +29,17 @@ app.use('/api/carrito', carritoRoutes);
 app.use('/api/inventario', inventarioRoutes);
 app.use('/api/pedido', pedidoRoutes);
 app.use('/api/usuarios', usuarioRoutes);
-
-
 app.use('/api/marcas', marcaRoutes);
 app.use('/api/categorias', categoriaRoutes);
 app.use('/api/productos', productoRoutes);
 app.use('/api/clientes', clienteRoutes);
 app.use('/api/proveedores', proveedorRoutes);
+app.use('/api/estados-pedido', estadoPedidoRoutes);
+app.use('/api/roles', rolRoutes);
+app.use('/api/pagos', pagoRoutes);
+app.use('/api/movimientos', movimientoRoutes);
+app.use('/api/detalle-carrito', detalleCarritoRoutes);
+app.use('/api/detalle-pedido', detallePedidoRoutes);
 
 app.get('/', (req, res) => {
   res.json({ ok: true, message: 'API E-Commerce Oracle 19c' });
