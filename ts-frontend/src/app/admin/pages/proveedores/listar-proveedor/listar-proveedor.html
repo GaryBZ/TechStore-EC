@@ -1,0 +1,96 @@
+<div class="ph">
+  <h1>Proveedores</h1>
+  <p>Catálogo completo de proveedores disponibles.</p>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="search-wrap">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input
+      class="search-input"
+      placeholder="Buscar proveedor…"
+      [(ngModel)]="search"
+    />
+  </div>
+  <span class="count-chip">{{ filteredProveedores.length }} proveedores</span>
+  <div class="ml-auto" style="display: flex; gap: 8px">
+    <button class="btn-primary" (click)="goToCreate()">
+      <i class="fa-solid fa-plus"></i> Nuevo proveedor
+    </button>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div *ngIf="loading" style="text-align:center; padding: 20px;">
+  Cargando...
+</div>
+
+<!-- TABLE -->
+<div class="t-wrap" *ngIf="!loading">
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 48px">ID</th>
+        <th>Proveedor</th>
+        <th style="width: 8px">RUC</th>
+        <th style="width: 100px">Contacto</th>
+        <th style="width: 100px">Telefono</th>
+        <th style="width: 100px">Correo</th>
+        <th style="width: 120px">Dirección</th>
+        <th style="width: 90px">Estado</th>
+        <th style="width: 96px; text-align: right; padding-right: 20px">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let proveedor of filteredProveedores">
+        <td class="td-dim td-num">{{ proveedor.pro_id }}</td>
+
+        <td>
+          <div class="brand-cell">
+            <span style="font-weight: 500">{{ proveedor.pro_emp }}</span>
+          </div>
+        </td>
+
+        <td class="td-dim">{{ proveedor.pro_ruc }}</td>
+        <td class="td-dim">{{ proveedor.pro_con }}</td>
+        <td class="td-dim">{{ proveedor.pro_tel }}</td>
+        <td class="td-dim">{{ proveedor.pro_cor }}</td>
+        <td class="td-dim">{{ proveedor.pro_dir }}</td>
+
+        <td>
+          <span class="pill p-green" *ngIf="proveedor.pro_est === 'A'">
+            <i class="fa-solid fa-circle"></i> Activo
+          </span>
+          <span class="pill p-red" *ngIf="proveedor.pro_est !== 'A'">
+            <i class="fa-solid fa-circle"></i> Inactivo
+          </span>
+        </td>
+
+        <td>
+          <div class="td-actions">
+            <button class="btn-icon btn-icon-edit" (click)="gestionar(proveedor.pro_id)">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <button class="btn-icon btn-icon-del" (click)="deleteProduct(proveedor.pro_id)">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- EMPTY STATE -->
+  <div class="empty-state" *ngIf="filteredProveedores.length === 0">
+    <div class="empty-icon"><i class="fa-solid fa-box-open"></i></div>
+    <strong style="color: var(--text)">Sin resultados</strong>
+    <span>No se encontraron productos con ese criterio.</span>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast">
+  <i class="fa-solid fa-circle-check"></i>
+  <span id="toastMsg"></span>
+</div>

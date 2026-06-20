@@ -3,4 +3,5 @@ export interface MarcaModel {
   mar_nom: string;
   mar_des: string | null;
   mar_est: string | null;
+  mar_products?: number;
 }

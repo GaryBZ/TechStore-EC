@@ -1,0 +1,147 @@
+<div class="ph">
+  <button class="ph-back" (click)="goBack()" title="Volver">
+    <i class="fa-solid fa-arrow-left"></i>
+  </button>
+  <div>
+    <h1>{{ isEdit ? 'Editar proveedor' : 'Nuevo proveedor' }}</h1>
+    <p>Completa los campos para {{ isEdit ? 'editar el' : 'registrar un' }} proveedor.</p>
+  </div>
+</div>
+
+<div class="form-layout">
+
+  <!-- COLUMNA IZQUIERDA -->
+  <div style="display:flex;flex-direction:column;gap:20px">
+
+    <!-- INFORMACIÓN GENERAL -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-head-icon">
+          <i class="fa-solid fa-truck-field"></i>
+        </div>
+        <h2>Información general</h2>
+      </div>
+
+      <div class="card-body">
+        <div class="form-grid" style="gap:18px">
+
+          <!-- Empresa -->
+          <div class="field">
+            <label>Empresa <span class="req">*</span></label>
+            <input
+              class="form-input"
+              [(ngModel)]="form.pro_emp"
+              maxlength="150"
+              placeholder="Nombre de la empresa"
+              (input)="clearErr('pro_emp')">
+
+            <div class="field-err" *ngIf="errors.pro_emp">
+              <i class="fa-solid fa-circle-exclamation"></i>
+              <span>La empresa es obligatoria.</span>
+            </div>
+          </div>
+
+          <!-- RUC -->
+          <div class="field">
+            <label>RUC</label>
+            <input
+              class="form-input"
+              [(ngModel)]="form.pro_ruc"
+              maxlength="13"
+              placeholder="9999999999999">
+          </div>
+
+          <!-- Contacto -->
+          <div class="field">
+            <label>Persona de contacto</label>
+            <input
+              class="form-input"
+              [(ngModel)]="form.pro_con"
+              maxlength="120"
+              placeholder="Nombre del contacto">
+          </div>
+
+          <!-- Teléfono -->
+          <div class="field">
+            <label>Teléfono</label>
+            <input
+              class="form-input"
+              [(ngModel)]="form.pro_tel"
+              maxlength="20"
+              placeholder="0999999999">
+          </div>
+
+          <!-- Correo -->
+          <div class="field">
+            <label>Correo electrónico</label>
+            <input
+              class="form-input"
+              [(ngModel)]="form.pro_cor"
+              type="email"
+              maxlength="120"
+              placeholder="correo@empresa.com">
+          </div>
+
+          <!-- Dirección -->
+          <div class="field">
+            <label>Dirección</label>
+            <textarea
+              class="form-textarea"
+              [(ngModel)]="form.pro_dir"
+              placeholder="Dirección del proveedor"></textarea>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCIONES -->
+    <div class="form-actions">
+      <button class="btn-ghost" (click)="goBack()">
+        <i class="fa-solid fa-xmark"></i>
+        Cancelar
+      </button>
+
+      <button class="btn-primary" (click)="guardar()" [disabled]="saving">
+        <i class="fa-solid fa-floppy-disk"></i>
+        {{ saving ? 'Guardando...' : 'Guardar proveedor' }}
+      </button>
+    </div>
+
+  </div>
+
+  <!-- COLUMNA DERECHA -->
+  <div style="display:flex;flex-direction:column;gap:20px">
+
+    <!-- ESTADO -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-head-icon">
+          <i class="fa-solid fa-toggle-on"></i>
+        </div>
+        <h2>Estado</h2>
+      </div>
+
+      <div class="card-body">
+        <div class="toggle-wrap">
+          <div>
+            <div class="tg-label">{{ form.pro_est === 'A' ? 'Activo' : 'Inactivo' }}</div>
+            <div class="tg-sub">
+              El proveedor está disponible para compras
+            </div>
+          </div>
+
+          <div class="toggle" [class.on]="form.pro_est === 'A'" (click)="toggleEst()"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div id="toast">
+  <i class="fa-solid fa-circle-check"></i>
+  <span id="toastMsg"></span>
+</div>

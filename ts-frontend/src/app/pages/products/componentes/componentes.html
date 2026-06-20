@@ -1,150 +1,89 @@
 <section class="components-page">
-	<div class="components-header">
-		<div>
-			<p class="components-kicker">Componentes</p>
-			<h1>Arma tu setup con piezas top</h1>
-			<p class="components-sub">CPU, GPU, RAM y almacenamiento con stock real y precios claros.</p>
-		</div>
-		<div class="components-actions">
-			<div class="sort">
-				<label for="sort">Ordenar</label>
-				<select id="sort">
-					<option>Ultimos</option>
-					<option>Precio: bajo a alto</option>
-					<option>Precio: alto a bajo</option>
-					<option>Mas vendidos</option>
-				</select>
-			</div>
-		</div>
-	</div>
+  <div class="components-header">
+    <div>
+      <p class="components-kicker">Componentes</p>
+      <h1>Arma tu setup con piezas top</h1>
+      <p class="components-sub">CPU, GPU, RAM y almacenamiento con stock real y precios claros.</p>
+    </div>
+    <div class="components-actions">
+      <div class="sort">
+        <label for="sort">Ordenar</label>
+        <select id="sort" [(ngModel)]="sortBy" (change)="applySort()">
+          <option value="recientes">Ultimos</option>
+          <option value="precio-asc">Precio: bajo a alto</option>
+          <option value="precio-desc">Precio: alto a bajo</option>
+        </select>
+      </div>
+    </div>
+  </div>
 
-	<div class="components-layout">
-		<aside class="filters">
-			<div class="filter-block">
-				<h3>Marca</h3>
-				<label class="check"><input type="checkbox"> AMD</label>
-				<label class="check"><input type="checkbox"> Intel</label>
-				<label class="check"><input type="checkbox"> NVIDIA</label>
-				<label class="check"><input type="checkbox"> ASUS</label>
-				<label class="check"><input type="checkbox"> Kingston</label>
-			</div>
+  <div class="components-layout">
+    <aside class="filters">
+      <div class="filter-block">
+        <h3>Marca</h3>
+        <label class="check" *ngFor="let mar of marcas">
+          <input type="checkbox" [checked]="selectedMarcas.includes(mar.mar_id)"
+            (change)="toggleMarca(mar.mar_id)">
+          {{ mar.mar_nom }}
+        </label>
+      </div>
 
-			<div class="filter-block">
-				<h3>Precio</h3>
-				<div class="range">
-					<div class="range-row">
-						<span>$90</span>
-						<span>$1,800</span>
-					</div>
-					<input type="range" min="90" max="1800" value="250">
-				</div>
-				<div class="price-inputs">
-					<input type="number" value="150" min="90" max="1800">
-					<input type="number" value="1200" min="90" max="1800">
-				</div>
-			</div>
+      <div class="filter-block">
+        <h3>Precio</h3>
+        <div class="range">
+          <div class="range-row">
+            <span>${{ minPrice }}</span>
+            <span>${{ maxPrice }}</span>
+          </div>
+          <input type="range" [min]="globalMin" [max]="globalMax" [(ngModel)]="maxPrice">
+        </div>
+        <div class="price-inputs">
+          <input type="number" [(ngModel)]="minPrice" [min]="globalMin" [max]="globalMax">
+          <input type="number" [(ngModel)]="maxPrice" [min]="globalMin" [max]="globalMax">
+        </div>
+      </div>
 
-			<div class="filter-block">
-				<h3>Categoria</h3>
-				<label class="check"><input type="checkbox"> Procesadores</label>
-				<label class="check"><input type="checkbox"> Tarjetas de video</label>
-				<label class="check"><input type="checkbox"> Memoria RAM</label>
-				<label class="check"><input type="checkbox"> Almacenamiento</label>
-			</div>
+      <div class="filter-block">
+        <h3>Categoria</h3>
+        <label class="check" *ngFor="let cat of categorias">
+          <input type="checkbox" [checked]="selectedCategorias.includes(cat.cat_id)"
+            (change)="toggleCategoria(cat.cat_id)">
+          {{ cat.cat_nom }}
+        </label>
+      </div>
 
-			<button class="filter-reset">Limpiar filtros</button>
-		</aside>
+      <button class="filter-reset" (click)="resetFiltros()">Limpiar filtros</button>
+    </aside>
 
-		<div class="cards">
-			<article class="card">
-				<div class="card-media gpu"></div>
-				<div class="card-body">
-					<div class="card-top">
-						<span class="badge">GPU</span>
-					</div>
-					<h3>ASUS TUF RTX 4070 OC 12GB</h3>
-					<p class="meta">NVIDIA · Triple fan · 2.7 slots</p>
-					<div class="card-bottom">
-						<span class="price">$899</span>
-						<span class="stock">Stock: 12</span>
-					</div>
-				</div>
-			</article>
+    <div class="cards" *ngIf="!loading">
+      <article class="card" *ngFor="let prod of filteredProducts">
+        <div class="card-media">
+          <img *ngIf="prod.pro_img" [src]="prod.pro_img" [alt]="prod.prd_nom" style="width:100%;height:100%;object-fit:cover">
+          <i *ngIf="!prod.pro_img" class="fa-solid fa-display" style="font-size:48px;opacity:0.3"></i>
+        </div>
+        <div class="card-body">
+          <div class="card-top">
+            <span class="badge">{{ getCategoriaNombre(prod.cat_id) }}</span>
+          </div>
+          <p class="sku">SKU-{{ prod.prd_sku }}</p>
+          <h3>{{ prod.prd_nom }}</h3>
+          <p class="meta">{{ getMarcaNombre(prod.mar_id) }} — {{ prod.prd_des }}</p>
+          <div class="card-bottom">
+            <span class="price">${{ prod.prd_pre_ven | number:'1.0-2' }}</span>
+            <button class="add-cart-btn" (click)="addToCart(prod)">
+              <i class="fa-solid fa-cart-shopping"></i>
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
 
-			<article class="card">
-				<div class="card-media cpu"></div>
-				<div class="card-body">
-					<div class="card-top">
-						<span class="badge">CPU</span>
-					</div>
-					<h3>AMD Ryzen 7 7800X3D</h3>
-					<p class="meta">8 cores · 16 hilos · 120W</p>
-					<div class="card-bottom">
-						<span class="price">$489</span>
-						<span class="stock">Stock: 8</span>
-					</div>
-				</div>
-			</article>
+    <div *ngIf="loading" style="padding: 40px; text-align: center; width: 100%;">
+      Cargando productos...
+    </div>
 
-			<article class="card">
-				<div class="card-media ram"></div>
-				<div class="card-body">
-					<div class="card-top">
-						<span class="badge">RAM</span>
-					</div>
-					<h3>Kingston Fury DDR5 32GB 6000</h3>
-					<p class="meta">CL36 · RGB · Intel XMP</p>
-					<div class="card-bottom">
-						<span class="price">$179</span>
-						<span class="stock">Stock: 24</span>
-					</div>
-				</div>
-			</article>
-
-			<article class="card">
-				<div class="card-media ssd"></div>
-				<div class="card-body">
-					<div class="card-top">
-						<span class="badge">SSD</span>
-					</div>
-					<h3>Samsung 990 PRO 2TB NVMe</h3>
-					<p class="meta">7450MB/s · PCIe 4.0</p>
-					<div class="card-bottom">
-						<span class="price">$209</span>
-						<span class="stock">Stock: 17</span>
-					</div>
-				</div>
-			</article>
-
-			<article class="card">
-				<div class="card-media cooler"></div>
-				<div class="card-body">
-					<div class="card-top">
-						<span class="badge">Cooler</span>
-					</div>
-					<h3>NZXT Kraken 360 RGB</h3>
-					<p class="meta">AIO · 360mm · LCD</p>
-					<div class="card-bottom">
-						<span class="price">$229</span>
-						<span class="stock">Stock: 10</span>
-					</div>
-				</div>
-			</article>
-
-			<article class="card">
-				<div class="card-media board"></div>
-				<div class="card-body">
-					<div class="card-top">
-						<span class="badge">Motherboard</span>
-					</div>
-					<h3>MSI MAG B650 TOMAHAWK</h3>
-					<p class="meta">WiFi 6E · ATX · PCIe 5.0</p>
-					<div class="card-bottom">
-						<span class="price">$249</span>
-						<span class="stock">Stock: 6</span>
-					</div>
-				</div>
-			</article>
-		</div>
-	</div>
+    <div *ngIf="!loading && filteredProducts.length === 0" style="padding: 40px; text-align: center; width: 100%;">
+      No se encontraron productos con esos filtros.
+    </div>
+  </div>
 </section>

@@ -1,4 +1,4 @@
-<main class="auth-page" [class.admin-mode]="isAdmin()">
+<main class="auth-page">
   <div class="auth-card">
 
     <!-- LEFT -->
@@ -9,35 +9,24 @@
         <span class="logo-text">TechStore</span>
       </a>
 
-      <!-- Mode toggle -->
-      <div class="mode-toggle">
-        <button class="mode-btn" [class.active-client]="isClient()" (click)="setMode('client')">
-          <i class="fa-solid fa-user"></i> Cliente
-        </button>
-        <button class="mode-btn" [class.active-admin]="isAdmin()" (click)="setMode('admin')">
-          <i class="fa-solid fa-shield-halved"></i> Admin
-        </button>
-      </div>
-
       <!-- Tab bar -->
       <div class="tab-bar">
         <button class="tab-btn" [class.active]="tab() === 'login'" (click)="setTab('login')">Iniciar sesión</button>
-        <button class="tab-btn" [class.active]="tab() === 'register'" [disabled]="isAdmin()" (click)="setTab('register')">Crear cuenta</button>
+        <button class="tab-btn" [class.active]="tab() === 'register'" (click)="setTab('register')">Crear cuenta</button>
       </div>
 
       <!-- LOGIN -->
       <div class="form-panel" [class.active]="tab() === 'login'">
         <div class="form-heading">
-          <div class="admin-badge"><i class="fa-solid fa-shield-halved"></i> Acceso restringido</div>
-          <h1>{{ loginTitle() }}</h1>
-          <p>{{ loginSub() }}</p>
+          <h1>Bienvenido de vuelta</h1>
+          <p>Accede a tu cuenta para continuar.</p>
         </div>
 
         <div class="field">
           <label>Correo</label>
           <div class="input-wrap">
             <i class="fa-regular fa-envelope"></i>
-            <input type="email" placeholder="tu@email.com" autocomplete="email" />
+            <input type="email" placeholder="tu@email.com" autocomplete="email" [(ngModel)]="loginEmail" name="loginEmail" />
           </div>
         </div>
 
@@ -45,12 +34,12 @@
           <label>Contraseña</label>
           <div class="input-wrap">
             <i class="fa-solid fa-lock"></i>
-            <input type="password" placeholder="••••••••" autocomplete="current-password" />
+            <input type="password" placeholder="••••••••" autocomplete="current-password" [(ngModel)]="loginPassword" name="loginPassword" />
           </div>
         </div>
 
-        <div class="meta-row">
-          <button class="forgot-link" type="button">¿Olvidaste tu contraseña?</button>
+        <div class="meta-row" *ngIf="errorMsg()" style="color:#f87171;font-size:13px;">
+          {{ errorMsg() }}
         </div>
 
         <button class="submit-btn" type="button" [disabled]="loginLoading()" (click)="handleLogin()">
@@ -61,7 +50,6 @@
       <!-- REGISTER -->
       <div class="form-panel" [class.active]="tab() === 'register'">
         <div class="form-heading">
-          <div class="admin-badge"><i class="fa-solid fa-shield-halved"></i> Acceso restringido</div>
           <h1>Crear cuenta</h1>
           <p>Únete a TechStore y arma tu setup al instante.</p>
         </div>
@@ -71,14 +59,14 @@
             <label>Nombre</label>
             <div class="input-wrap">
               <i class="fa-regular fa-user"></i>
-              <input type="text" placeholder="Tu nombre" autocomplete="given-name" />
+              <input type="text" placeholder="Tu nombre" autocomplete="given-name" [(ngModel)]="regNombre" name="regNombre" />
             </div>
           </div>
           <div class="field">
             <label>Apellido</label>
             <div class="input-wrap">
               <i class="fa-regular fa-user"></i>
-              <input type="text" placeholder="Apellido" autocomplete="family-name" />
+              <input type="text" placeholder="Apellido" autocomplete="family-name" [(ngModel)]="regApellido" name="regApellido" />
             </div>
           </div>
         </div>
@@ -87,7 +75,7 @@
           <label>Correo</label>
           <div class="input-wrap">
             <i class="fa-regular fa-envelope"></i>
-            <input type="email" placeholder="tu@email.com" autocomplete="email" />
+            <input type="email" placeholder="tu@email.com" autocomplete="email" [(ngModel)]="regCorreo" name="regCorreo" />
           </div>
         </div>
 
@@ -95,17 +83,21 @@
           <label>Contraseña</label>
           <div class="input-wrap">
             <i class="fa-solid fa-lock"></i>
-            <input type="password" placeholder="Mín. 8 caracteres" autocomplete="new-password" />
+            <input type="password" placeholder="Mín. 8 caracteres" autocomplete="new-password" [(ngModel)]="regPassword" name="regPassword" />
           </div>
         </div>
 
         <label class="checkbox-field">
-          <input type="checkbox" />
+          <input type="checkbox" [(ngModel)]="regAceptaTerminos" name="regAceptaTerminos" />
           <span>Acepto los <a>términos de servicio</a> y la <a>política de privacidad</a> de TechStore.</span>
         </label>
 
-        <button class="submit-btn" type="button">
-          <i class="fa-solid fa-user-plus"></i> Crear cuenta
+        <div class="meta-row" *ngIf="errorMsg()" style="color:#f87171;font-size:13px;">
+          {{ errorMsg() }}
+        </div>
+
+        <button class="submit-btn" type="button" [disabled]="registerLoading()" (click)="handleRegister()">
+          <i class="fa-solid fa-user-plus"></i> {{ registerLoading() ? 'Creando...' : 'Crear cuenta' }}
         </button>
       </div>
 
@@ -114,13 +106,12 @@
     <!-- RIGHT -->
     <div class="auth-right">
       <div class="right-content">
-        <div class="right-label">{{ rightLabel() }}</div>
+        <div class="right-label">E-commerce de tecnología</div>
         <h2 class="right-heading">
-          {{ rightHeadingMain() }}<br><span>{{ rightHeadingAccent() }}</span>
+          Compra GPUs, CPUs y más<br><span>al instante.</span>
         </h2>
-        <p class="right-sub">{{ rightSub() }}</p>
+        <p class="right-sub">Compra productos y recíbelo en tiempo récord.</p>
 
-        <!-- Client features -->
         <div class="feature-list features-client">
           <div class="feature-item">
             <div class="feat-icon"><i class="fa-solid fa-microchip"></i></div>
@@ -144,33 +135,7 @@
             </div>
           </div>
         </div>
-
-        <!-- Admin features -->
-        <div class="feature-list features-admin">
-          <div class="feature-item">
-            <div class="feat-icon"><i class="fa-solid fa-chart-line"></i></div>
-            <div class="feat-text">
-              <strong>Panel de control</strong>
-              <span>Gestiona ventas, inventario y usuarios.</span>
-            </div>
-          </div>
-          <div class="feature-item">
-            <div class="feat-icon"><i class="fa-solid fa-key"></i></div>
-            <div class="feat-text">
-              <strong>Gestión de keys</strong>
-              <span>Genera, revoca y monitorea licencias.</span>
-            </div>
-          </div>
-          <div class="feature-item">
-            <div class="feat-icon"><i class="fa-solid fa-users-gear"></i></div>
-            <div class="feat-text">
-              <strong>Administración de usuarios</strong>
-              <span>Roles, permisos y auditoría completa.</span>
-            </div>
-          </div>
-        </div>
       </div>
-
     </div>
   </div>
 </main>

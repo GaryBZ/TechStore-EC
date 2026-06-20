@@ -1,82 +1,86 @@
 <div class="ph">
   <h1>Auditoría</h1>
-  <p>Registro de todas las modificaciones realizadas por administradores.</p>
+  <p>Registro de cambios realizados en el sistema.</p>
 </div>
 
 <!-- TOOLBAR -->
 <div class="toolbar">
-  <!-- Search -->
   <div class="search-wrap">
     <i class="fa-solid fa-magnifying-glass"></i>
-    <input class="search-input" id="searchInput"
-      placeholder="Buscar admin, tabla, IP…"
-      oninput="applyFilters()">
+    <input class="search-input" placeholder="Buscar por usuario, tabla…" [(ngModel)]="search" />
   </div>
-
-  <!-- Filtro: Tipo de acción -->
-  <select class="filter-sel" id="filterAccion" onchange="applyFilters()">
+  <select class="filter-select" [(ngModel)]="filterTabla">
+    <option value="">Todas las tablas</option>
+    <option *ngFor="let t of tablas" [value]="t">{{ t }}</option>
+  </select>
+  <select class="filter-select" [(ngModel)]="filterAccion">
     <option value="">Todas las acciones</option>
     <option value="INSERT">INSERT</option>
     <option value="UPDATE">UPDATE</option>
     <option value="DELETE">DELETE</option>
   </select>
-
-  <!-- Filtro: Tabla -->
-  <select class="filter-sel" id="filterTabla" onchange="applyFilters()">
-    <option value="">Todas las tablas</option>
-    <option value="productos">productos</option>
-    <option value="pedidos">pedidos</option>
-    <option value="inventario">inventario</option>
-    <option value="usuarios">usuarios</option>
-    <option value="clientes">clientes</option>
-    <option value="movimientos_inventario">movimientos_inventario</option>
-    <option value="marcas">marcas</option>
-    <option value="categorias">categorias</option>
-  </select>
-
-  <span class="count-chip" id="countChip">— registros</span>
-
-  <div class="ml-auto" style="display:flex;gap:8px">
-    <button class="btn-ghost" onclick="exportar()">
-      <i class="fa-solid fa-download"></i> Exportar
-    </button>
-  </div>
+  <span class="count-chip">{{ filteredAuditoria.length }} registros</span>
 </div>
 
+<!-- LOADING -->
+<div *ngIf="loading" style="text-align: center; padding: 20px">Cargando...</div>
+
 <!-- TABLE -->
-<div class="t-wrap">
+<div class="t-wrap" *ngIf="!loading">
   <table>
     <thead>
       <tr>
-        <th style="width:52px">#</th>
-        <th style="width:130px">Admin</th>
-        <th style="width:150px">Tabla</th>
-        <th style="width:110px">Acción</th>
-        <th style="width:180px">Valor anterior</th>
-        <th style="width:180px">Valor nuevo</th>
-        <th style="width:130px">IP</th>
-        <th style="width:110px">Fecha</th>
+        <th style="width: 48px">ID</th>
+        <th style="width: 90px">Usuario</th>
+        <th style="width: 110px">Tabla</th>
+        <th style="width: 90px">Acción</th>
+        <th>Valor anterior</th>
+        <th>Valor nuevo</th>
+        <th style="width: 110px">IP</th>
+        <th style="width: 150px">Fecha</th>
       </tr>
     </thead>
-    <tbody id="tbody"></tbody>
+    <tbody>
+      <tr *ngFor="let aud of filteredAuditoria">
+        <td class="td-dim td-num">{{ aud.aud_id }}</td>
+        <td class="td-dim">{{ aud.usu_id ?? '—' }}</td>
+        <td class="td-dim">{{ aud.aud_tab }}</td>
+
+        <td>
+          <span class="pill p-green" *ngIf="aud.aud_acc === 'INSERT'">
+            <i class="fa-solid fa-circle"></i> INSERT
+          </span>
+          <span class="pill p-blue" *ngIf="aud.aud_acc === 'UPDATE'">
+            <i class="fa-solid fa-circle"></i> UPDATE
+          </span>
+          <span class="pill p-red" *ngIf="aud.aud_acc === 'DELETE'">
+            <i class="fa-solid fa-circle"></i> DELETE
+          </span>
+        </td>
+
+        <td
+          class="td-dim"
+          style="font-size: 11px; max-width: 220px; overflow: hidden; text-overflow: ellipsis"
+        >
+          {{ formatJson(aud.aud_val_ant) }}
+        </td>
+        <td
+          class="td-dim"
+          style="font-size: 11px; max-width: 220px; overflow: hidden; text-overflow: ellipsis"
+        >
+          {{ formatJson(aud.aud_val_nue) }}
+        </td>
+
+        <td class="td-dim">{{ aud.aud_ip ?? '—' }}</td>
+        <td class="td-dim">{{ aud.aud_fec | date: 'dd/MM/yyyy HH:mm' }}</td>
+      </tr>
+    </tbody>
   </table>
 
-  <!-- Empty state -->
-  <div class="empty-state" id="emptyState" style="display:none">
-    <div class="empty-icon"><i class="fa-solid fa-scroll"></i></div>
-    <strong style="color:var(--text)">Sin resultados</strong>
-    <span>No se encontraron registros con ese criterio.</span>
+  <!-- EMPTY STATE -->
+  <div class="empty-state" *ngIf="filteredAuditoria.length === 0">
+    <div class="empty-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+    <strong style="color: var(--text)">Sin resultados</strong>
+    <span>No se encontraron registros de auditoría con ese criterio.</span>
   </div>
-
-  <!-- Pagination -->
-  <div class="pagination" id="paginationBar">
-    <span class="pag-info" id="pagInfo"></span>
-    <div class="pag-btns" id="pagBtns"></div>
-  </div>
-</div>
-
-<!-- TOAST -->
-<div id="toast">
-  <i class="fa-solid fa-circle-check"></i>
-  <span id="toastMsg"></span>
 </div>

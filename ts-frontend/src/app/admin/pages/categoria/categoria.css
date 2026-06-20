@@ -139,7 +139,7 @@ tbody tr.data-row:hover td { background: rgba(124,58,237,0.025); }
   padding: 7px 12px;
   color: var(--text); font-family: var(--font-body);
   font-size: 13px; outline: none;
-  width: 100%;
+  width: 90%;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .inline-input:focus {

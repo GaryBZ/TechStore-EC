@@ -12,4 +12,5 @@ export interface ProductoModel {
   prd_stk_min: number | null;
   prd_est: string | null;
   prd_fec_cre: string | null;
+  tip_id: number;
 }

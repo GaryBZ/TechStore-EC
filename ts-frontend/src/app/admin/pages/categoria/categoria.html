@@ -26,9 +26,9 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 56px">#</th>
+        <th style="width: 56px">ID</th>
         <th>Nombre</th>
-        <!--<th style="width: 140px">Productos</th>-->
+        <th style="width: 140px">Productos</th>
         <th style="width: 100px">Estado</th>
         <th style="width: 96px; text-align: right; padding-right: 20px">Acciones</th>
       </tr>
@@ -103,21 +103,19 @@
 
           <td>
             <div class="brand-cell">
-              <div class="brand-avatar">
-                {{ categoria.cat_nom.slice(0, 2).toUpperCase() }}
-              </div>
+
 
               <span style="font-weight: 500">
                 {{ categoria.cat_nom }}
               </span>
             </div>
           </td>
-          <!--
+          
           <td class="td-dim">
-            {{ categoria.products }}
-            producto{{ categoria.products !== 1 ? 's' : '' }}
+            {{ categoria.cat_products }}
+            producto{{ categoria.cat_products !== 1 ? 's' : '' }}
           </td>
--->
+
           <td>
             <span class="pill p-green">
               <i class="fa-solid fa-circle"></i>
@@ -142,7 +140,7 @@
   </table>
 
   <!-- EMPTY -->
-  <div class="empty-state" *ngIf="(filteredCategories?.length ?? 0) === 0">
+  <div class="empty-state" *ngIf="filteredCategories.length === 0">
     <div class="empty-icon">
       <i class="fa-solid fa-tag"></i>
     </div>

@@ -31,6 +31,12 @@ export class ProductoService {
       .pipe(map((response) => this.unwrapResponse(response)));
   }
 
+  getByTipo(tip_id: number) {
+    return this.http
+      .get<ApiResponse<ProductoModel[]>>(`${this.baseUrl}/tipo/${tip_id}`)
+      .pipe(map((response) => this.unwrapResponse(response) ?? []));
+  }
+
   getByMarca(mar_id: number) {
     return this.http
       .get<ApiResponse<ProductoModel[]>>(`${this.baseUrl}/marca/${mar_id}`)

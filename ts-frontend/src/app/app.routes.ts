@@ -1,3 +1,4 @@
+import { ListarProveedor } from './admin/pages/proveedores/listar-proveedor/listar-proveedor';
 import { Routes } from '@angular/router';
 import { Home } from './pages/home/home';
 import { Componentes } from './pages/products/componentes/componentes';
@@ -67,6 +68,27 @@ export const routes: Routes = [
         path: 'auditoria',
         loadComponent: () => import('./admin/pages/auditoria/auditoria').then((m) => m.Auditoria),
       },
+            {
+        path: 'proveedores',
+        loadComponent: () =>
+          import('./admin/pages/proveedores/listar-proveedor/listar-proveedor').then(
+            (m) => m.ListarProveedor,
+          ),
+      },
+      {
+        path: 'proveedores/crear',
+        loadComponent: () =>
+          import('./admin/pages/proveedores/crear-proveedor/crear-proveedor').then(
+            (m) => m.CrearProveedor,
+          ),
+      },
+      {
+        path: 'proveedores/:id',
+        loadComponent: () =>
+          import('./admin/pages/proveedores/crear-proveedor/crear-proveedor').then(
+            (m) => m.CrearProveedor,
+          ),
+      },
       {
         path: 'pedidos',
         loadComponent: () => import('./admin/pages/pedidos/pedidos').then((m) => m.Pedidos),
@@ -79,7 +101,14 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'crear-producto',
+        path: 'productos/crear',
+        loadComponent: () =>
+          import('./admin/pages/producto/crear-producto/crear-producto').then(
+            (m) => m.CrearProducto,
+          ),
+      },
+      {
+        path: 'productos/:id',
         loadComponent: () =>
           import('./admin/pages/producto/crear-producto/crear-producto').then(
             (m) => m.CrearProducto,

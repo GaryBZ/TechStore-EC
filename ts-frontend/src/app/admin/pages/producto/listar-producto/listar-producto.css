@@ -223,6 +223,19 @@ tbody tr.data-row:hover td { background: rgba(124,58,237,0.025); }
 }
 .row-new { animation: rowSlideIn 0.22s ease; }
 
+/* ── BRAND AVATAR ── */
+.brand-cell { display: flex; align-items: center; gap: 10px; }
+.brand-avatar {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: var(--primary-tint);
+  border: 1px solid rgba(124,58,237,0.2);
+  display: grid; place-items: center;
+  font-size: 11px; font-weight: 700;
+  color: #c4b5fd; font-family: var(--font-head);
+  flex-shrink: 0; user-select: none;
+}
+
+
 /* ── PAGINATION ── */
 .pagination {
   display: flex; align-items: center; justify-content: space-between;
