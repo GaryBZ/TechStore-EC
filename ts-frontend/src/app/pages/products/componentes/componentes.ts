@@ -47,11 +47,21 @@ export class Componentes implements OnInit {
   }
 
   loadCategorias(): void {
-    this.categoriaService.getAll().subscribe({ next: (data) => { this.categorias = data; this.cdr.detectChanges(); } });
+    this.categoriaService.getAll().subscribe({
+      next: (data) => {
+        this.categorias = data;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   loadMarcas(): void {
-    this.marcaService.getAll().subscribe({ next: (data) => { this.marcas = data; this.cdr.detectChanges(); } });
+    this.marcaService.getAll().subscribe({
+      next: (data) => {
+        this.marcas = data;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   loadTipoYProductos(): void {
@@ -68,7 +78,9 @@ export class Componentes implements OnInit {
               this.loading = false;
               this.cdr.detectChanges();
             },
-            error: () => { this.loading = false; },
+            error: () => {
+              this.loading = false;
+            },
           });
         } else {
           this.loading = false;
@@ -116,14 +128,17 @@ export class Componentes implements OnInit {
   get filteredProducts(): ProductoModel[] {
     let result = this.products.filter((p) => {
       const matchMarca = this.selectedMarcas.length === 0 || this.selectedMarcas.includes(p.mar_id);
-      const matchCat = this.selectedCategorias.length === 0 || this.selectedCategorias.includes(p.cat_id);
+      const matchCat =
+        this.selectedCategorias.length === 0 || this.selectedCategorias.includes(p.cat_id);
       const matchPrice = p.prd_pre_ven >= this.minPrice && p.prd_pre_ven <= this.maxPrice;
       const matchEstado = p.prd_est === 'A';
       return matchMarca && matchCat && matchPrice && matchEstado;
     });
 
-    if (this.sortBy === 'precio-asc') result = [...result].sort((a, b) => a.prd_pre_ven - b.prd_pre_ven);
-    if (this.sortBy === 'precio-desc') result = [...result].sort((a, b) => b.prd_pre_ven - a.prd_pre_ven);
+    if (this.sortBy === 'precio-asc')
+      result = [...result].sort((a, b) => a.prd_pre_ven - b.prd_pre_ven);
+    if (this.sortBy === 'precio-desc')
+      result = [...result].sort((a, b) => b.prd_pre_ven - a.prd_pre_ven);
 
     return result;
   }
@@ -134,6 +149,16 @@ export class Componentes implements OnInit {
 
   getMarcaNombre(mar_id: number): string {
     return this.marcas.find((m) => m.mar_id === mar_id)?.mar_nom ?? '';
+  }
+
+  get marcasDisponibles(): MarcaModel[] {
+    const idsEnUso = new Set(this.products.map((p) => p.mar_id));
+    return this.marcas.filter((m) => idsEnUso.has(m.mar_id));
+  }
+
+  get categoriasDisponibles(): CategoriaModel[] {
+    const idsEnUso = new Set(this.products.map((p) => p.cat_id));
+    return this.categorias.filter((c) => idsEnUso.has(c.cat_id));
   }
 
   addToCart(prod: ProductoModel): void {
