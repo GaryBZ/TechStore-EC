@@ -6,5 +6,6 @@ export interface ProveedorModel {
   pro_tel: string | null;
   pro_cor: string | null;
   pro_dir: string | null;
+  ciu_id: number | null;
   pro_est: string | null;
 }

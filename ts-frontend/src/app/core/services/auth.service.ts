@@ -17,6 +17,8 @@ interface RegisterPayload {
   usu_cor: string;
   usu_pas: string;
   usu_tel?: string;
+  usu_ced?: string;
+  ciu_id?: number;
 }
 
 @Injectable({ providedIn: 'root' })

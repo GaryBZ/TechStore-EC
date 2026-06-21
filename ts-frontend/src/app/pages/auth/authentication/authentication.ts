@@ -1,8 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { ProvinciaService } from '../../../core/services/provincia.service';
+import { CiudadService } from '../../../core/services/ciudad.service';
+import { ProvinciaModel } from '../../../core/models/provincia.model';
+import { CiudadModel } from '../../../core/models/ciudad.model';
 
 @Component({
   selector: 'app-authentication',
@@ -10,7 +14,7 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './authentication.html',
   styleUrl: './authentication.css',
 })
-export class Authentication {
+export class Authentication implements OnInit {
   tab = signal<'login' | 'register'>('login');
 
   loginLoading = signal(false);
@@ -28,12 +32,42 @@ export class Authentication {
   regApellido = '';
   regCorreo = '';
   regPassword = '';
+  regCedula = '';
+  regTelefono = '';
+  regProvinciaId = '';
+  regCiudadId = '';
   regAceptaTerminos = false;
+
+  provincias: ProvinciaModel[] = [];
+  ciudades: CiudadModel[] = [];
 
   constructor(
     private router: Router,
     private authService: AuthService,
+    private provinciaService: ProvinciaService,
+    private ciudadService: CiudadService,
   ) {}
+
+  ngOnInit(): void {
+    this.provinciaService.getAll().subscribe({
+      next: (data) => (this.provincias = data),
+      error: (err) => console.error('Error cargando provincias', err),
+    });
+
+    this.ciudadService.getAll().subscribe({
+      next: (data) => (this.ciudades = data),
+      error: (err) => console.error('Error cargando ciudades', err),
+    });
+  }
+
+  get ciudadesFiltradas(): CiudadModel[] {
+    if (!this.regProvinciaId) return [];
+    return this.ciudades.filter((c) => c.prv_id === Number(this.regProvinciaId));
+  }
+
+  onProvinciaChange(): void {
+    this.regCiudadId = '';
+  }
 
   loginBtnLabel = computed(() => {
     if (this.loginLoading()) return 'Ingresando...';
@@ -114,6 +148,9 @@ export class Authentication {
         usu_ape: this.regApellido,
         usu_cor: this.regCorreo,
         usu_pas: this.regPassword,
+        usu_tel: this.regTelefono || undefined,
+        usu_ced: this.regCedula || undefined,
+        ciu_id: this.regCiudadId ? Number(this.regCiudadId) : undefined,
       })
       .subscribe({
         next: (user) => {

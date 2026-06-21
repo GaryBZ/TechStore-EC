@@ -9,10 +9,8 @@
 </div>
 
 <div class="form-layout">
-
   <!-- COLUMNA IZQUIERDA -->
-  <div style="display:flex;flex-direction:column;gap:20px">
-
+  <div style="display: flex; flex-direction: column; gap: 20px">
     <!-- INFORMACIÓN GENERAL -->
     <div class="card">
       <div class="card-head">
@@ -23,8 +21,7 @@
       </div>
 
       <div class="card-body">
-        <div class="form-grid" style="gap:18px">
-
+        <div class="form-grid" style="gap: 18px">
           <!-- Empresa -->
           <div class="field">
             <label>Empresa <span class="req">*</span></label>
@@ -33,7 +30,8 @@
               [(ngModel)]="form.pro_emp"
               maxlength="150"
               placeholder="Nombre de la empresa"
-              (input)="clearErr('pro_emp')">
+              (input)="clearErr('pro_emp')"
+            />
 
             <div class="field-err" *ngIf="errors.pro_emp">
               <i class="fa-solid fa-circle-exclamation"></i>
@@ -48,7 +46,8 @@
               class="form-input"
               [(ngModel)]="form.pro_ruc"
               maxlength="13"
-              placeholder="9999999999999">
+              placeholder="9999999999999"
+            />
           </div>
 
           <!-- Contacto -->
@@ -58,7 +57,8 @@
               class="form-input"
               [(ngModel)]="form.pro_con"
               maxlength="120"
-              placeholder="Nombre del contacto">
+              placeholder="Nombre del contacto"
+            />
           </div>
 
           <!-- Teléfono -->
@@ -68,7 +68,8 @@
               class="form-input"
               [(ngModel)]="form.pro_tel"
               maxlength="20"
-              placeholder="0999999999">
+              placeholder="0999999999"
+            />
           </div>
 
           <!-- Correo -->
@@ -79,7 +80,34 @@
               [(ngModel)]="form.pro_cor"
               type="email"
               maxlength="120"
-              placeholder="correo@empresa.com">
+              placeholder="correo@empresa.com"
+            />
+          </div>
+
+          <!-- Provincia + Ciudad -->
+          <div class="field" style="display: flex; gap: 12px">
+            <div class="select-wrap" style="flex: 1">
+              <label>Provincia</label>
+              <select
+                class="form-select"
+                [(ngModel)]="provinciaSeleccionada"
+                (change)="onProvinciaChange()"
+              >
+                <option value="">Seleccionar…</option>
+                <option *ngFor="let prv of provincias" [value]="prv.prv_id">
+                  {{ prv.prv_nom }}
+                </option>
+              </select>
+            </div>
+            <div class="select-wrap"style="flex: 1">
+              <label>Ciudad</label>
+              <select class="form-select" [(ngModel)]="form.ciu_id">
+                <option value="">Seleccionar…</option>
+                <option *ngFor="let ciu of ciudadesFiltradas" [value]="ciu.ciu_id">
+                  {{ ciu.ciu_nom }}
+                </option>
+              </select>
+            </div>
           </div>
 
           <!-- Dirección -->
@@ -88,9 +116,9 @@
             <textarea
               class="form-textarea"
               [(ngModel)]="form.pro_dir"
-              placeholder="Dirección del proveedor"></textarea>
+              placeholder="Dirección del proveedor"
+            ></textarea>
           </div>
-
         </div>
       </div>
     </div>
@@ -107,12 +135,10 @@
         {{ saving ? 'Guardando...' : 'Guardar proveedor' }}
       </button>
     </div>
-
   </div>
 
   <!-- COLUMNA DERECHA -->
-  <div style="display:flex;flex-direction:column;gap:20px">
-
+  <div style="display: flex; flex-direction: column; gap: 20px">
     <!-- ESTADO -->
     <div class="card">
       <div class="card-head">
@@ -126,18 +152,14 @@
         <div class="toggle-wrap">
           <div>
             <div class="tg-label">{{ form.pro_est === 'A' ? 'Activo' : 'Inactivo' }}</div>
-            <div class="tg-sub">
-              El proveedor está disponible para compras
-            </div>
+            <div class="tg-sub">El proveedor está disponible para compras</div>
           </div>
 
           <div class="toggle" [class.on]="form.pro_est === 'A'" (click)="toggleEst()"></div>
         </div>
       </div>
     </div>
-
   </div>
-
 </div>
 
 <!-- TOAST -->

@@ -1,8 +1,9 @@
 import { Component, computed, ElementRef, HostListener, signal } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { UsuarioModel } from '../../core/models/usuario.model';
 import { CommonModule } from '@angular/common';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -19,6 +20,18 @@ export class Navbar {
     private authService: AuthService,
     private el: ElementRef,
   ) {
+    console.log('Navbar constructor ejecutado');
+    this.refreshUser();
+    console.log('Usuario en navbar:', this.user());
+
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
+      console.log('Navegación detectada, refrescando usuario');
+      this.refreshUser();
+      console.log('Usuario actualizado:', this.user());
+    });
+  }
+
+  refreshUser(): void {
     this.user.set(this.authService.getCurrentUser());
   }
 
@@ -30,6 +43,7 @@ export class Navbar {
   modeLabel = computed(() => {
     switch (this.user()?.rol_nom) {
       case 'administrador':
+      case 'admin':
         return 'Modo admin';
       case 'bodeguero':
         return 'Modo bodeguero';
@@ -41,6 +55,7 @@ export class Navbar {
   modeIcon = computed(() => {
     switch (this.user()?.rol_nom) {
       case 'administrador':
+      case 'admin':
         return 'fa-solid fa-shield-halved';
       case 'bodeguero':
         return 'fa-solid fa-warehouse';
@@ -52,6 +67,7 @@ export class Navbar {
   modeRoute = computed(() => {
     switch (this.user()?.rol_nom) {
       case 'administrador':
+      case 'admin':
         return '/admin';
       case 'bodeguero':
         return '/bodega';
@@ -59,7 +75,6 @@ export class Navbar {
         return null;
     }
   });
-
   toggleDropdown(): void {
     this.dropdownOpen.update((v) => !v);
   }

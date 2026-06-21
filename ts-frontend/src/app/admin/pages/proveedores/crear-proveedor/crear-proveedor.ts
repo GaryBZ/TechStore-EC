@@ -4,6 +4,10 @@ import { ProveedorService } from '../../../../core/services/proveedor.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ProvinciaModel } from '../../../../core/models/provincia.model';
+import { CiudadModel } from '../../../../core/models/ciudad.model';
+import { ProvinciaService } from '../../../../core/services/provincia.service';
+import { CiudadService } from '../../../../core/services/ciudad.service';
 
 @Component({
   selector: 'app-crear-proveedor',
@@ -17,6 +21,10 @@ export class CrearProveedor implements OnInit {
   proveedorId: number | null = null;
   saving = false;
 
+  provincias: ProvinciaModel[] = [];
+  ciudades: CiudadModel[] = [];
+  provinciaSeleccionada = '';
+
   form: Partial<ProveedorModel> = {
     pro_emp: '',
     pro_ruc: '',
@@ -24,6 +32,7 @@ export class CrearProveedor implements OnInit {
     pro_tel: '',
     pro_cor: '',
     pro_dir: '',
+    ciu_id: null,
     pro_est: 'A',
   };
 
@@ -31,12 +40,17 @@ export class CrearProveedor implements OnInit {
 
   constructor(
     private proveedorService: ProveedorService,
+    private provinciaService: ProvinciaService,
+    private ciudadService: CiudadService,
     private route: ActivatedRoute,
     private router: Router,
     private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
+    this.loadProvincias();
+    this.loadCiudades();
+
     this.route.paramMap.subscribe((params: ParamMap) => {
       const id = params.get('id');
       if (id) {
@@ -51,6 +65,23 @@ export class CrearProveedor implements OnInit {
     });
   }
 
+  loadProvincias(): void {
+    this.provinciaService.getAll().subscribe({ next: (data) => (this.provincias = data) });
+  }
+
+  loadCiudades(): void {
+    this.ciudadService.getAll().subscribe({ next: (data) => (this.ciudades = data) });
+  }
+
+  get ciudadesFiltradas(): CiudadModel[] {
+    if (!this.provinciaSeleccionada) return [];
+    return this.ciudades.filter((c) => c.prv_id === Number(this.provinciaSeleccionada));
+  }
+
+  onProvinciaChange(): void {
+    this.form.ciu_id = null;
+  }
+
   resetForm(): void {
     this.form = {
       pro_emp: '',
@@ -59,20 +90,25 @@ export class CrearProveedor implements OnInit {
       pro_tel: '',
       pro_cor: '',
       pro_dir: '',
+      ciu_id: null,
       pro_est: 'A',
     };
+    this.provinciaSeleccionada = '';
   }
 
   loadProveedor(id: number): void {
     this.proveedorService.getById(id).subscribe({
       next: (data) => {
-        if (data) this.form = { ...data };
+        if (data) {
+          this.form = { ...data };
+          const ciudad = this.ciudades.find((c) => c.ciu_id === data.ciu_id);
+          if (ciudad) this.provinciaSeleccionada = String(ciudad.prv_id);
+        }
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Error cargando proveedor', err),
     });
   }
-
   toggleEst(): void {
     this.form.pro_est = this.form.pro_est === 'A' ? 'I' : 'A';
   }
@@ -101,6 +137,7 @@ export class CrearProveedor implements OnInit {
       pro_tel: this.form.pro_tel || null,
       pro_cor: this.form.pro_cor || null,
       pro_dir: this.form.pro_dir || null,
+      ciu_id: this.form.ciu_id || null,
       pro_est: this.form.pro_est,
     };
 

@@ -55,7 +55,7 @@
   border-radius: 20px;
   padding: 3px 11px;
   font-size: 11px; color: var(--text-sub);
-  font-family: monospace; white-space: nowrap;
+  font-family: var(--font-body); white-space: nowrap;
 }
 
 /* ── BUTTONS ── */
