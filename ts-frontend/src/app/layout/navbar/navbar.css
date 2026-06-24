@@ -87,6 +87,22 @@
 	color: var(--text-muted);
 }
 
+.nav-login-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary);
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.nav-login-btn:hover { background: var(--primary-hover); }
+
 .nav-menu {
 	position: absolute;
 	top: 36px;

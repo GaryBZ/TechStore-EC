@@ -118,7 +118,7 @@
             </label>
             <div class="sku-wrap">
               <input
-                class="form-input readonly"
+                class="form-input-sku"
                 [(ngModel)]="form.prd_sku"
                 readonly
                 placeholder="Se genera automáticamente…"
@@ -222,19 +222,47 @@
 
   <!-- RIGHT COLUMN -->
   <div style="display: flex; flex-direction: column; gap: 20px">
-    <!-- IMAGEN (URL simple) -->
+    <!-- IMAGEN -->
     <div class="card">
       <div class="card-head">
         <div class="card-head-icon"><i class="fa-regular fa-image"></i></div>
         <h2>Imagen del producto</h2>
       </div>
       <div class="card-body">
-        <div class="field">
-          <label>URL de la imagen</label>
-          <input class="form-input" [(ngModel)]="form.pro_img" placeholder="https://..." />
+        <!-- Drop zone -->
+        <div
+          class="img-drop"
+          [class.dragging]="dragging"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+          (click)="fileInput.click()"
+          *ngIf="!form.pro_img"
+        >
+          <input #fileInput type="file" accept="image/*" hidden (change)="onFileSelected($event)" />
+          <div class="img-drop-icon"><i class="fa-regular fa-image"></i></div>
+          <p><strong>Haz clic o arrastra</strong><br />una imagen aquí</p>
+          <p class="hint">PNG, JPG, WEBP — máx. 5 MB</p>
         </div>
-        <div *ngIf="form.pro_img" style="margin-top: 10px">
-          <img [src]="form.pro_img" style="max-width: 100%; border-radius: 8px" alt="Preview" />
+
+        <!-- Preview -->
+        <div class="img-preview" *ngIf="form.pro_img">
+          <img [src]="form.pro_img" alt="Preview" style="max-width: 100%; border-radius: 8px" />
+          <button class="img-preview-remove" (click)="removeImg()" title="Quitar imagen">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Uploading state -->
+        <div
+          *ngIf="uploadingImage"
+          style="text-align: center; padding: 12px; font-size: 13px; color: var(--text-muted)"
+        >
+          <i class="fa-solid fa-spinner fa-spin"></i> Subiendo imagen...
+        </div>
+
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 10px; line-height: 1.5">
+          Se recomienda imagen cuadrada con fondo transparente.
         </div>
       </div>
     </div>

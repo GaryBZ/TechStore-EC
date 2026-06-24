@@ -159,7 +159,7 @@
   border-radius: 16px;
   overflow: hidden;
   display: grid;
-  grid-template-rows: 120px 1fr;
+  grid-template-rows: 200px 1fr;
   transition:
     transform 0.15s,
     border-color 0.15s;
@@ -172,6 +172,9 @@
 
 .card-media {
   background: linear-gradient(140deg, rgba(124, 58, 237, 0.2), #0f1116);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .card-media.gpu {

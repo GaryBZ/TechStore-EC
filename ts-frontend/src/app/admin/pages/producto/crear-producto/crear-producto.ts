@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ProductoService } from '../../../../core/services/producto.service';
 import { CategoriaService } from '../../../../core/services/categoria.service';
 import { MarcaService } from '../../../../core/services/marca.service';
@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TipoModel } from '../../../../core/models/tipo.model';
 import { TipoService } from '../../../../core/services/tipo.service';
+import { UploadService } from '../../../../core/services/upload.service';
 
 @Component({
   selector: 'app-crear-producto',
@@ -23,6 +24,9 @@ export class CrearProducto implements OnInit {
   isEdit = false;
   productId: number | null = null;
   saving = false;
+  @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
+  dragging = false;
+  uploadingImage = false;
 
   categorias: CategoriaModel[] = [];
   marcas: MarcaModel[] = [];
@@ -72,6 +76,7 @@ export class CrearProducto implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private cdr: ChangeDetectorRef,
+    private uploadService: UploadService,
   ) {}
 
   ngOnInit(): void {
@@ -116,7 +121,7 @@ export class CrearProducto implements OnInit {
     this.productoService.getById(id).subscribe({
       next: (data) => {
         if (data) this.form = { ...data };
-        this.cdr.detectChanges(); // <- agregar esto
+        this.cdr.detectChanges();
       },
       error: (err) => console.error('Error cargando producto', err),
     });
@@ -219,5 +224,59 @@ export class CrearProducto implements OnInit {
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 3000);
     }
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.dragging = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.dragging = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.dragging = false;
+    const file = event.dataTransfer?.files[0];
+    if (file) this.uploadFile(file);
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) this.uploadFile(file);
+  }
+
+  uploadFile(file: File): void {
+  if (!file.type.startsWith('image/')) {
+    this.showToast('Solo se permiten imágenes');
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    this.showToast('La imagen no debe superar 5MB');
+    return;
+  }
+
+  this.uploadingImage = true;
+  this.uploadService.uploadProducto(file).subscribe({
+    next: (data) => {
+      this.uploadingImage = false;
+      if (data) {
+        this.form.pro_img = data.url;
+      }
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      this.uploadingImage = false;
+      this.showToast(err.error?.message || 'Error al subir imagen');
+      this.cdr.detectChanges();
+    },
+  });
+}
+
+  removeImg(): void {
+    this.form.pro_img = '';
   }
 }

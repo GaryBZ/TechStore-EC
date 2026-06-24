@@ -1,96 +1,118 @@
 <nav class="nav">
-	<div class="nav-inner">
-		<div class="nav-top">
-			<div class="nav-brand">
-				<div class="nav-brand-icon"><img src="logo ts blanco.svg" alt="TechStore logo"></div>
-				<span>TechStore</span>
-			</div>
+  <div class="nav-inner">
+    <div class="nav-top">
+      <div class="nav-brand">
+        <div class="nav-brand-icon"><img src="logo ts blanco.svg" alt="TechStore logo" /></div>
+        <span>TechStore</span>
+      </div>
 
-			<div class="nav-search">
-				<i class="fa-solid fa-magnifying-glass"></i>
-				<input placeholder="Buscar producto...">
-			</div>
+      <div class="nav-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input placeholder="Buscar producto..." />
+      </div>
 
-			<div class="nav-right">
-				<div class="nav-cart" title="Carrito">
-					<i class="fa-solid fa-cart-shopping"></i>
-					<span class="nav-cart-count">2</span>
-				</div>
+      <div class="nav-right">
+        <div class="nav-cart" title="Carrito">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="nav-cart-count">2</span>
+        </div>
 
-				<div class="nav-item" *ngIf="user()">
-					<div class="nav-user" (click)="toggleDropdown()">
-						<div class="nav-avatar">{{ userInitial() }}</div>
-						<span>{{ user()!.usu_nom }}</span>
-						<span class="nav-caret"><i class="fa-solid fa-chevron-down"></i></span>
-					</div>
+        <!-- Usuario logueado -->
+        <div class="nav-item" *ngIf="user()">
+          <div class="nav-user" (click)="toggleDropdown()">
+            <div class="nav-avatar">{{ userInitial() }}</div>
+            <span>{{ user()!.usu_nom }}</span>
+            <span class="nav-caret"><i class="fa-solid fa-chevron-down"></i></span>
+          </div>
 
-					<div class="nav-menu" [style.opacity]="dropdownOpen() ? 1 : 0"
-					     [style.visibility]="dropdownOpen() ? 'visible' : 'hidden'"
-					     [style.transform]="dropdownOpen() ? 'translateY(0)' : 'translateY(6px)'"
-					     style="left: auto; right: 0;">
-						<a routerLink="/perfil" (click)="closeDropdown()">
-							<i class="fa-solid fa-user"></i> Perfil
-						</a>
-						<a *ngIf="modeLabel()" [routerLink]="modeRoute()" (click)="closeDropdown()">
-							<i [class]="modeIcon()"></i> {{ modeLabel() }}
-						</a>
-						<a (click)="logout()">
-							<i class="fa-solid fa-right-from-bracket"></i> Salir
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
+          <div
+            class="nav-menu"
+            [style.opacity]="dropdownOpen() ? 1 : 0"
+            [style.visibility]="dropdownOpen() ? 'visible' : 'hidden'"
+            [style.transform]="dropdownOpen() ? 'translateY(0)' : 'translateY(6px)'"
+            style="left: auto; right: 0"
+          >
+            <a routerLink="/perfil" (click)="closeDropdown()">
+              <i class="fa-solid fa-user"></i> Perfil
+            </a>
+            <a *ngIf="modeLabel()" [routerLink]="modeRoute()" (click)="closeDropdown()">
+              <i [class]="modeIcon()"></i> {{ modeLabel() }}
+            </a>
+            <a (click)="logout()"> <i class="fa-solid fa-right-from-bracket"></i> Salir </a>
+          </div>
+        </div>
 
-		<div class="nav-bottom">
-			<div class="nav-links">
-				<a class="nav-link" routerLink="/inicio" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-					<i class="fa-solid fa-house"></i> Inicio
-				</a>
+        <!-- Sin usuario -->
+        <button class="nav-login-btn" *ngIf="!user()" routerLink="/authentication">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Iniciar sesión
+        </button>
+      </div>
+    </div>
 
-				<div class="nav-item">
-					<a class="nav-link" routerLink="/categoria/componentes" routerLinkActive="active">
-						<i class="fa-solid fa-microchip"></i> Componentes
-						<span class="nav-caret"><i class="fa-solid fa-chevron-down"></i></span>
-					</a>
-					<div class="nav-menu">
-						<a routerLink="/categoria/componentes" [queryParams]="{ sub: 'procesadores' }">Procesadores</a>
-						<a routerLink="/categoria/componentes" [queryParams]="{ sub: 'tarjetas-video' }">Tarjetas de video</a>
-						<a routerLink="/categoria/componentes" [queryParams]="{ sub: 'memoria-ram' }">Memoria RAM</a>
-						<a routerLink="/categoria/componentes" [queryParams]="{ sub: 'almacenamiento' }">Almacenamiento</a>
-					</div>
-				</div>
+    <div class="nav-bottom">
+      <div class="nav-links">
+        <a
+          class="nav-link"
+          routerLink="/inicio"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <i class="fa-solid fa-house"></i> Inicio
+        </a>
 
-				<div class="nav-item">
-					<a class="nav-link" routerLink="/categoria/perifericos" routerLinkActive="active">
-						<i class="fa-solid fa-keyboard"></i> Perifericos
-						<span class="nav-caret"><i class="fa-solid fa-chevron-down"></i></span>
-					</a>
-					<div class="nav-menu">
-						<a routerLink="/categoria/perifericos" [queryParams]="{ sub: 'teclados' }">Teclados</a>
-						<a routerLink="/categoria/perifericos" [queryParams]="{ sub: 'mouse' }">Mouse</a>
-						<a routerLink="/categoria/perifericos" [queryParams]="{ sub: 'audio' }">Audio</a>
-						<a routerLink="/categoria/perifericos" [queryParams]="{ sub: 'sillas' }">Sillas gamer</a>
-					</div>
-				</div>
+        <div class="nav-item">
+          <a class="nav-link" routerLink="/categoria/componentes" routerLinkActive="active">
+            <i class="fa-solid fa-microchip"></i> Componentes
+            <span class="nav-caret"><i class="fa-solid fa-chevron-down"></i></span>
+          </a>
+          <div class="nav-menu">
+            <a routerLink="/categoria/componentes" [queryParams]="{ sub: 'procesadores' }"
+              >Procesadores</a
+            >
+            <a routerLink="/categoria/componentes" [queryParams]="{ sub: 'tarjetas-video' }"
+              >Tarjetas de video</a
+            >
+            <a routerLink="/categoria/componentes" [queryParams]="{ sub: 'memoria-ram' }"
+              >Memoria RAM</a
+            >
+            <a routerLink="/categoria/componentes" [queryParams]="{ sub: 'almacenamiento' }"
+              >Almacenamiento</a
+            >
+          </div>
+        </div>
 
-				<div class="nav-item">
-					<a class="nav-link" routerLink="/categoria/monitores" routerLinkActive="active">
-						<i class="fa-solid fa-desktop"></i> Monitores
-						<span class="nav-caret"><i class="fa-solid fa-chevron-down"></i></span>
-					</a>
-					<div class="nav-menu">
-						<a routerLink="/categoria/monitores" [queryParams]="{ sub: 'gaming' }">Gaming</a>
-						<a routerLink="/categoria/monitores" [queryParams]="{ sub: 'ultrawide' }">Ultrawide</a>
-						<a routerLink="/categoria/monitores" [queryParams]="{ sub: '4k' }">4K</a>
-						<a routerLink="/categoria/monitores" [queryParams]="{ sub: 'curvos' }">Curvos</a>
-					</div>
-				</div>
+        <div class="nav-item">
+          <a class="nav-link" routerLink="/categoria/perifericos" routerLinkActive="active">
+            <i class="fa-solid fa-keyboard"></i> Perifericos
+            <span class="nav-caret"><i class="fa-solid fa-chevron-down"></i></span>
+          </a>
+          <div class="nav-menu">
+            <a routerLink="/categoria/perifericos" [queryParams]="{ sub: 'teclados' }">Teclados</a>
+            <a routerLink="/categoria/perifericos" [queryParams]="{ sub: 'mouse' }">Mouse</a>
+            <a routerLink="/categoria/perifericos" [queryParams]="{ sub: 'audio' }">Audio</a>
+            <a routerLink="/categoria/perifericos" [queryParams]="{ sub: 'sillas' }"
+              >Sillas gamer</a
+            >
+          </div>
+        </div>
 
-				<a class="nav-link" routerLink="/categoria/laptops" routerLinkActive="active">
-					<i class="fa-solid fa-laptop"></i> Laptops
-				</a>
-			</div>
-		</div>
-	</div>
+        <div class="nav-item">
+          <a class="nav-link" routerLink="/categoria/monitores" routerLinkActive="active">
+            <i class="fa-solid fa-desktop"></i> Monitores
+            <span class="nav-caret"><i class="fa-solid fa-chevron-down"></i></span>
+          </a>
+          <div class="nav-menu">
+            <a routerLink="/categoria/monitores" [queryParams]="{ sub: 'gaming' }">Gaming</a>
+            <a routerLink="/categoria/monitores" [queryParams]="{ sub: 'ultrawide' }">Ultrawide</a>
+            <a routerLink="/categoria/monitores" [queryParams]="{ sub: '4k' }">4K</a>
+            <a routerLink="/categoria/monitores" [queryParams]="{ sub: 'curvos' }">Curvos</a>
+          </div>
+        </div>
+
+        <a class="nav-link" routerLink="/categoria/laptops" routerLinkActive="active">
+          <i class="fa-solid fa-laptop"></i> Laptops
+        </a>
+      </div>
+    </div>
+  </div>
 </nav>

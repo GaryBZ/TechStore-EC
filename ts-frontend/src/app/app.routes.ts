@@ -7,6 +7,8 @@ import { Monitores } from './pages/products/monitores/monitores';
 import { Laptops } from './pages/products/laptops/laptops';
 import { DetailProduct } from './pages/products/detail-product/detail-product';
 import { Authentication } from './pages/auth/authentication/authentication';
+import { roleGuard } from './core/guards/role.guard';
+import { ListarProducto } from './admin/pages/producto/listar-producto/listar-producto';
 
 export const routes: Routes = [
   {
@@ -39,6 +41,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
+    canActivate: [roleGuard(['administrador'])],
     loadComponent: () =>
       import('./admin/layout/admin-layout/admin-layout').then((m) => m.AdminLayout),
     children: [
@@ -68,7 +71,7 @@ export const routes: Routes = [
         path: 'auditoria',
         loadComponent: () => import('./admin/pages/auditoria/auditoria').then((m) => m.Auditoria),
       },
-            {
+      {
         path: 'proveedores',
         loadComponent: () =>
           import('./admin/pages/proveedores/listar-proveedor/listar-proveedor').then(
@@ -116,5 +119,20 @@ export const routes: Routes = [
       },
     ],
   },
+
+  {
+    path: 'bodega',
+    canActivate: [roleGuard(['administrador', 'bodeguero'])],
+    children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      },
+      { path: 'productos', component: ListarProducto },
+      { path: 'proveedores', component: ListarProveedor },
+    ],
+  },
+
   { path: '**', redirectTo: 'inicio' },
 ];
