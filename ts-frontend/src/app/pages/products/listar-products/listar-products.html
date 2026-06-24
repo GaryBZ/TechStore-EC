@@ -1,9 +1,9 @@
 <section class="components-page">
   <div class="components-header">
     <div>
-      <p class="components-kicker">Componentes</p>
-      <h1>Arma tu setup con piezas top</h1>
-      <p class="components-sub">CPU, GPU, RAM y almacenamiento con stock real y precios claros.</p>
+      <p class="components-kicker">Resultados</p>
+      <h1>Buscando: "{{ query }}"</h1>
+      <p class="components-sub">{{ sortedProducts.length }} producto(s) encontrado(s).</p>
     </div>
     <div class="components-actions">
       <div class="sort">
@@ -18,51 +18,8 @@
   </div>
 
   <div class="components-layout">
-    <aside class="filters">
-      <div class="filter-block">
-        <h3>Marca</h3>
-        <label class="check" *ngFor="let mar of marcasDisponibles">
-          <input
-            type="checkbox"
-            [checked]="selectedMarcas.includes(mar.mar_id)"
-            (change)="toggleMarca(mar.mar_id)"
-          />
-          {{ mar.mar_nom }}
-        </label>
-      </div>
-
-      <div class="filter-block">
-        <h3>Precio</h3>
-        <div class="range">
-          <div class="range-row">
-            <span>${{ minPrice }}</span>
-            <span>${{ maxPrice }}</span>
-          </div>
-          <input type="range" [min]="globalMin" [max]="globalMax" [(ngModel)]="maxPrice" />
-        </div>
-        <div class="price-inputs">
-          <input type="number" [(ngModel)]="minPrice" [min]="globalMin" [max]="globalMax" />
-          <input type="number" [(ngModel)]="maxPrice" [min]="globalMin" [max]="globalMax" />
-        </div>
-      </div>
-
-      <div class="filter-block">
-        <h3>Categoria</h3>
-        <label class="check" *ngFor="let cat of categoriasDisponibles">
-          <input
-            type="checkbox"
-            [checked]="selectedCategorias.includes(cat.cat_id)"
-            (change)="toggleCategoria(cat.cat_id)"
-          />
-          {{ cat.cat_nom }}
-        </label>
-      </div>
-
-      <button class="filter-reset" (click)="resetFiltros()">Limpiar filtros</button>
-    </aside>
-
     <div class="cards" *ngIf="!loading">
-      <article class="card" *ngFor="let prod of filteredProducts">
+      <article class="card" *ngFor="let prod of sortedProducts">
         <div class="card-media">
           <img
             *ngIf="prod.pro_img"
@@ -98,10 +55,10 @@
     </div>
 
     <div
-      *ngIf="!loading && filteredProducts.length === 0"
+      *ngIf="!loading && sortedProducts.length === 0"
       style="padding: 40px; text-align: center; width: 100%"
     >
-      No se encontraron productos con esos filtros.
+      No se encontraron productos para "{{ query }}".
     </div>
   </div>
 </section>

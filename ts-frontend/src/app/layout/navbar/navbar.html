@@ -8,7 +8,11 @@
 
       <div class="nav-search">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input placeholder="Buscar producto..." />
+        <input
+          placeholder="Buscar producto..."
+          [(ngModel)]="searchTerm"
+          (keyup.enter)="buscarProducto()"
+        />
       </div>
 
       <div class="nav-right">
@@ -34,6 +38,9 @@
           >
             <a routerLink="/perfil" (click)="closeDropdown()">
               <i class="fa-solid fa-user"></i> Perfil
+            </a>
+            <a routerLink="/metodos-pago" (click)="closeDropdown()">
+              <i class="fa-solid fa-credit-card"></i> Métodos de pago
             </a>
             <a *ngIf="modeLabel()" [routerLink]="modeRoute()" (click)="closeDropdown()">
               <i [class]="modeIcon()"></i> {{ modeLabel() }}

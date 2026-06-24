@@ -5,10 +5,12 @@ import { Componentes } from './pages/products/componentes/componentes';
 import { Perifericos } from './pages/products/perifericos/perifericos';
 import { Monitores } from './pages/products/monitores/monitores';
 import { Laptops } from './pages/products/laptops/laptops';
-import { DetailProduct } from './pages/products/detail-product/detail-product';
 import { Authentication } from './pages/auth/authentication/authentication';
 import { roleGuard } from './core/guards/role.guard';
 import { ListarProducto } from './admin/pages/producto/listar-producto/listar-producto';
+import { ListarProducts } from './pages/products/listar-products/listar-products';
+import { MetodosPago } from './pages/perfil/metodos-pago/metodos-pago';
+import { MiPerfil } from './pages/perfil/mi-perfil/mi-perfil';
 
 export const routes: Routes = [
   {
@@ -32,12 +34,20 @@ export const routes: Routes = [
     component: Laptops,
   },
   {
-    path: 'productos/:id',
-    component: DetailProduct,
-  },
-  {
     path: 'authentication',
     component: Authentication,
+  },
+  {
+    path: 'productos/buscar',
+    component: ListarProducts,
+  },
+  {
+    path: 'metodos-pago',
+    component: MetodosPago,
+  },
+  {
+    path: 'perfil',
+    component: MiPerfil,
   },
   {
     path: 'admin',

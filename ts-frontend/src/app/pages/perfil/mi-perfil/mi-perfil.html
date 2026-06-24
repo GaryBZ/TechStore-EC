@@ -1,0 +1,144 @@
+<section class="perfil-page">
+  <div class="perfil-header">
+    <p class="perfil-kicker">Mi cuenta</p>
+    <h1>Mi perfil</h1>
+    <p class="perfil-sub">Revisa y actualiza tu información personal.</p>
+  </div>
+
+  <div class="perfil-toast" *ngIf="guardadoOk">
+    <i class="fa-solid fa-circle-check"></i>
+    Datos actualizados correctamente.
+  </div>
+
+  <div class="perfil-layout" *ngIf="usuario() as u">
+    <!-- Tarjeta lateral -->
+    <aside class="perfil-card-side">
+      <div class="perfil-avatar">{{ iniciales }}</div>
+      <h2>{{ nombreCompleto }}</h2>
+      <span class="perfil-rol-badge">
+        <i class="fa-solid fa-id-badge"></i>
+        {{ rolLabel }}
+      </span>
+      <p class="perfil-cor">{{ u.usu_cor }}</p>
+
+      <div class="perfil-side-meta">
+        <div>
+          <span class="meta-label">Cliente desde</span>
+          <span class="meta-value">{{ fechaRegistroLegible }}</span>
+        </div>
+        <div>
+          <span class="meta-label">Estado</span>
+          <span class="meta-value">
+            <span class="estado-dot" [class.activo]="u.usu_est === 'A'"></span>
+            {{ u.usu_est === 'A' ? 'Activo' : 'Inactivo' }}
+          </span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Panel principal -->
+    <div class="perfil-main">
+      <!-- Vista de solo lectura -->
+      <div class="perfil-info-card" *ngIf="!editando">
+        <div class="perfil-info-head">
+          <h3>Información personal</h3>
+          <button class="btn-ghost" (click)="abrirEdicion()">
+            <i class="fa-solid fa-pen"></i> Editar
+          </button>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Nombre</span>
+            <span class="info-value">{{ u.usu_nom }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Apellido</span>
+            <span class="info-value">{{ u.usu_ape }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Correo electrónico</span>
+            <span class="info-value">{{ u.usu_cor }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Teléfono</span>
+            <span class="info-value">{{ u.usu_tel || 'No registrado' }}</span>
+          </div>
+          <div class="info-item" *ngIf="u.usu_ced">
+            <span class="info-label">Cédula</span>
+            <span class="info-value">{{ u.usu_ced }}</span>
+          </div>
+          <div class="info-item full">
+            <span class="info-label">Dirección</span>
+            <span class="info-value">{{ u.usu_dir || 'No registrada' }}</span>
+          </div>
+        </div>
+
+        <p class="perfil-note">
+          <i class="fa-solid fa-circle-info"></i>
+          El correo y la cédula no se pueden editar desde aquí. Si necesitas cambiarlos, contacta a soporte.
+        </p>
+      </div>
+
+      <!-- Formulario de edición -->
+      <div class="perfil-info-card" *ngIf="editando">
+        <div class="perfil-info-head">
+          <h3>Editar información</h3>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Nombre</label>
+            <input type="text" [(ngModel)]="form.usu_nom" [class.error]="errores.usu_nom" maxlength="40" />
+            <span class="error-msg" *ngIf="errores.usu_nom">{{ errores.usu_nom }}</span>
+          </div>
+
+          <div class="field">
+            <label>Apellido</label>
+            <input type="text" [(ngModel)]="form.usu_ape" [class.error]="errores.usu_ape" maxlength="40" />
+            <span class="error-msg" *ngIf="errores.usu_ape">{{ errores.usu_ape }}</span>
+          </div>
+
+          <div class="field">
+            <label>
+              Teléfono
+              <i class="fa-solid fa-circle-info tooltip-trigger" title="Lo usamos para coordinar entregas o avisos de tu pedido"></i>
+            </label>
+            <input
+              type="tel"
+              placeholder="Ej: 0991234567"
+              [(ngModel)]="form.usu_tel"
+              (ngModelChange)="onTelInput()"
+              [class.error]="errores.usu_tel"
+            />
+            <span class="error-msg" *ngIf="errores.usu_tel">{{ errores.usu_tel }}</span>
+          </div>
+
+          <div class="field full">
+            <label>Dirección</label>
+            <input
+              type="text"
+              placeholder="Calle, número, referencia"
+              [(ngModel)]="form.usu_dir"
+              [class.error]="errores.usu_dir"
+              maxlength="120"
+            />
+            <span class="error-msg" *ngIf="errores.usu_dir">{{ errores.usu_dir }}</span>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-ghost" (click)="cancelarEdicion()" [disabled]="guardando">Cancelar</button>
+          <button class="btn-primary" (click)="guardar()" [disabled]="guardando">
+            <span *ngIf="!guardando"><i class="fa-solid fa-check"></i> Guardar cambios</span>
+            <span *ngIf="guardando"><span class="spinner small"></span> Guardando...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="perfil-empty" *ngIf="!usuario()">
+    No se encontró información de tu cuenta. Intenta iniciar sesión de nuevo.
+  </div>
+</section>

@@ -1,0 +1,170 @@
+<section class="pay-page">
+  <div class="pay-header">
+    <p class="pay-kicker">Mi cuenta</p>
+    <h1>Métodos de pago</h1>
+    <p class="pay-sub">Administra tus tarjetas guardadas. Los pagos en esta plataforma son simulados.</p>
+  </div>
+
+  <div class="pay-info-grid">
+    <div class="info-card">
+      <i class="fa-solid fa-lock"></i>
+      <div>
+        <h4>Datos cifrados</h4>
+        <p>Solo guardamos los últimos 4 dígitos de tu tarjeta. El resto nunca se almacena.</p>
+      </div>
+    </div>
+    <div class="info-card">
+      <i class="fa-solid fa-shield-halved"></i>
+      <div>
+        <h4>Ambiente simulado</h4>
+        <p>No se realizan cobros reales. Esto es un entorno de pruebas para fines del proyecto.</p>
+      </div>
+    </div>
+    <div class="info-card">
+      <i class="fa-solid fa-eye-slash"></i>
+      <div>
+        <h4>Sin CVV almacenado</h4>
+        <p>El código de seguridad se pide solo al momento del pago y no se conserva.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="pay-list-header">
+    <h3>Tarjetas guardadas</h3>
+    <button class="btn-primary" (click)="abrirModal()">
+      <i class="fa-solid fa-plus"></i> Agregar tarjeta
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="pay-loading">
+    <span class="spinner"></span>
+    Cargando métodos de pago...
+  </div>
+
+  <div *ngIf="!loading && tarjetas().length === 0" class="pay-empty">
+    Aún no tienes tarjetas guardadas.
+  </div>
+
+  <div class="pay-cards" *ngIf="!loading">
+    <article class="pay-card" *ngFor="let tar of tarjetas()">
+      <div class="pay-card-icon" [ngClass]="tar.tar_marca">
+        <i
+          class="fa-brands"
+          [ngClass]="tar.tar_marca === 'visa' ? 'fa-cc-visa' : tar.tar_marca === 'mastercard' ? 'fa-cc-mastercard' : 'fa-credit-card'"
+        ></i>
+      </div>
+      <div class="pay-card-body">
+        <p class="pay-card-alias">{{ tar.tar_alias }}</p>
+        <p class="pay-card-num">**** **** **** {{ tar.tar_ult4 }}</p>
+        <div class="pay-card-meta">
+          <span>{{ tar.tar_titu }}</span>
+          <span>Vence {{ tar.tar_venc }}</span>
+        </div>
+      </div>
+      <button class="pay-card-remove" title="Eliminar tarjeta" (click)="eliminar(tar.tar_id)">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+    </article>
+  </div>
+</section>
+
+<!-- Modal -->
+<div class="modal-overlay" *ngIf="modalAbierto" (click)="cerrarModal()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-head">
+      <h3>Agregar método de pago</h3>
+      <button class="modal-close" (click)="cerrarModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="field">
+        <label>Tipo de método</label>
+        <select [(ngModel)]="form.mpg_id" [class.error]="errores.mpg_id">
+          <option [ngValue]="null" disabled>Selecciona una opción</option>
+          <option *ngFor="let m of metodosPago" [ngValue]="m.mpg_id">{{ m.mpg_nom }}</option>
+        </select>
+        <span class="error-msg" *ngIf="errores.mpg_id">{{ errores.mpg_id }}</span>
+      </div>
+
+      <div class="field">
+        <label>Alias (opcional)</label>
+        <input type="text" placeholder="Ej: Tarjeta del trabajo" [(ngModel)]="form.alias" maxlength="40" />
+      </div>
+
+      <div class="field">
+        <label>Nombre del titular</label>
+        <input type="text" placeholder="Como aparece en la tarjeta" [(ngModel)]="form.titular" [class.error]="errores.titular" />
+        <span class="error-msg" *ngIf="errores.titular">{{ errores.titular }}</span>
+      </div>
+
+      <div class="field">
+        <label>
+          Número de tarjeta
+          <i class="fa-solid fa-circle-info tooltip-trigger" title="Acepta Visa y Mastercard"></i>
+        </label>
+        <div class="card-number-wrap">
+          <input
+            type="text"
+            inputmode="numeric"
+            placeholder="0000 0000 0000 0000"
+            [(ngModel)]="form.numero"
+            (ngModelChange)="onNumeroInput()"
+            [class.error]="errores.numero"
+          />
+          <i
+            class="fa-brands brand-mini"
+            [ngClass]="marcaDetectada === 'visa' ? 'fa-cc-visa visa' : marcaDetectada === 'mastercard' ? 'fa-cc-mastercard mastercard' : 'fa-credit-card neutral'"
+          ></i>
+        </div>
+        <span class="error-msg" *ngIf="errores.numero">{{ errores.numero }}</span>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Vencimiento</label>
+          <input
+            type="text"
+            placeholder="MM/YY"
+            [(ngModel)]="form.vencimiento"
+            (ngModelChange)="onVencimientoInput()"
+            [class.error]="errores.vencimiento"
+            maxlength="5"
+          />
+          <span class="error-msg" *ngIf="errores.vencimiento">{{ errores.vencimiento }}</span>
+        </div>
+
+        <div class="field">
+          <label>
+            CVV
+            <i class="fa-solid fa-circle-info tooltip-trigger" title="Los 3 o 4 dígitos al reverso de tu tarjeta. No lo guardamos."></i>
+          </label>
+          <input
+            type="password"
+            inputmode="numeric"
+            placeholder="123"
+            [(ngModel)]="form.cvv"
+            (ngModelChange)="onCvvInput()"
+            [class.error]="errores.cvv"
+            maxlength="4"
+          />
+          <span class="error-msg" *ngIf="errores.cvv">{{ errores.cvv }}</span>
+        </div>
+      </div>
+
+      <p class="modal-note">
+        <i class="fa-solid fa-shield-halved"></i>
+        Este es un pago simulado. No se realizará ningún cargo real.
+      </p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-ghost" (click)="cerrarModal()" [disabled]="guardando">Cancelar</button>
+      <button class="btn-primary" (click)="guardar()" [disabled]="guardando">
+        <span *ngIf="!guardando">Guardar tarjeta</span>
+        <span *ngIf="guardando"><span class="spinner small"></span> Guardando...</span>
+      </button>
+    </div>
+  </div>
+</div>

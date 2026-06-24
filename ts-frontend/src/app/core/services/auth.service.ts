@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environment/environment';
 import { UsuarioModel } from '../models/usuario.model';
+import { Observable } from 'rxjs';
 
 type ApiResponse<T> = { ok: boolean; data: T } | T;
 
@@ -19,6 +20,13 @@ interface RegisterPayload {
   usu_tel?: string;
   usu_ced?: string;
   ciu_id?: number;
+}
+
+interface UpdateProfilePayload {
+  usu_nom?: string;
+  usu_ape?: string;
+  usu_tel?: string | null;
+  usu_dir?: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -67,5 +75,11 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return !!this.getToken();
+  }
+
+  updateProfile(usu_id: number, payload: UpdateProfilePayload): Observable<UsuarioModel | null> {
+    return this.http
+      .patch<ApiResponse<UsuarioModel>>(`${this.baseUrl}/profile/${usu_id}`, payload)
+      .pipe(map((response) => this.unwrapResponse(response)));
   }
 }

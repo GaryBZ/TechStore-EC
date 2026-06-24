@@ -4,30 +4,27 @@ import { AuthService } from '../../core/services/auth.service';
 import { UsuarioModel } from '../../core/models/usuario.model';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterModule, CommonModule],
+  imports: [RouterModule, CommonModule, FormsModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
 export class Navbar {
   user = signal<UsuarioModel | null>(null);
   dropdownOpen = signal(false);
+  searchTerm = signal('');
 
   constructor(
     private router: Router,
     private authService: AuthService,
     private el: ElementRef,
   ) {
-    console.log('Navbar constructor ejecutado');
     this.refreshUser();
-    console.log('Usuario en navbar:', this.user());
-
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
-      console.log('Navegación detectada, refrescando usuario');
       this.refreshUser();
-      console.log('Usuario actualizado:', this.user());
     });
   }
 
@@ -75,6 +72,7 @@ export class Navbar {
         return null;
     }
   });
+
   toggleDropdown(): void {
     this.dropdownOpen.update((v) => !v);
   }
@@ -88,6 +86,12 @@ export class Navbar {
     if (!this.el.nativeElement.contains(event.target)) {
       this.closeDropdown();
     }
+  }
+
+  buscarProducto(): void {
+    const term = this.searchTerm().trim();
+    if (!term) return;
+    this.router.navigate(['/productos/buscar'], { queryParams: { q: term } });
   }
 
   logout(): void {
