@@ -27,6 +27,10 @@
           <span class="meta-value">{{ fechaRegistroLegible }}</span>
         </div>
         <div>
+          <span class="meta-label">Ubicación</span>
+          <span class="meta-value">{{ ubicacionLabel }}</span>
+        </div>
+        <div>
           <span class="meta-label">Estado</span>
           <span class="meta-value">
             <span class="estado-dot" [class.activo]="u.usu_est === 'A'"></span>
@@ -72,11 +76,16 @@
             <span class="info-label">Dirección</span>
             <span class="info-value">{{ u.usu_dir || 'No registrada' }}</span>
           </div>
+          <div class="info-item">
+            <span class="info-label">Provincia / Ciudad</span>
+            <span class="info-value">{{ ubicacionLabel }}</span>
+          </div>
         </div>
 
         <p class="perfil-note">
           <i class="fa-solid fa-circle-info"></i>
-          El correo y la cédula no se pueden editar desde aquí. Si necesitas cambiarlos, contacta a soporte.
+          El correo y la cédula no se pueden editar desde aquí. Si necesitas cambiarlos, contacta a
+          soporte.
         </p>
       </div>
 
@@ -89,20 +98,33 @@
         <div class="form-grid">
           <div class="field">
             <label>Nombre</label>
-            <input type="text" [(ngModel)]="form.usu_nom" [class.error]="errores.usu_nom" maxlength="40" />
+            <input
+              type="text"
+              [(ngModel)]="form.usu_nom"
+              [class.error]="errores.usu_nom"
+              maxlength="40"
+            />
             <span class="error-msg" *ngIf="errores.usu_nom">{{ errores.usu_nom }}</span>
           </div>
 
           <div class="field">
             <label>Apellido</label>
-            <input type="text" [(ngModel)]="form.usu_ape" [class.error]="errores.usu_ape" maxlength="40" />
+            <input
+              type="text"
+              [(ngModel)]="form.usu_ape"
+              [class.error]="errores.usu_ape"
+              maxlength="40"
+            />
             <span class="error-msg" *ngIf="errores.usu_ape">{{ errores.usu_ape }}</span>
           </div>
 
           <div class="field">
             <label>
               Teléfono
-              <i class="fa-solid fa-circle-info tooltip-trigger" title="Lo usamos para coordinar entregas o avisos de tu pedido"></i>
+              <i
+                class="fa-solid fa-circle-info tooltip-trigger"
+                title="Lo usamos para coordinar entregas o avisos de tu pedido"
+              ></i>
             </label>
             <input
               type="tel"
@@ -125,10 +147,30 @@
             />
             <span class="error-msg" *ngIf="errores.usu_dir">{{ errores.usu_dir }}</span>
           </div>
+
+          <div class="field">
+            <label>Provincia</label>
+            <select [(ngModel)]="form.prv_id" (ngModelChange)="onProvinciaChange()">
+              <option [ngValue]="null">Selecciona provincia</option>
+              <option *ngFor="let p of provincias" [ngValue]="p.prv_id">{{ p.prv_nom }}</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Ciudad</label>
+            <select [(ngModel)]="form.ciu_id" [disabled]="!form.prv_id">
+              <option [ngValue]="null">Selecciona ciudad</option>
+              <option *ngFor="let c of ciudadesFiltradas" [ngValue]="c.ciu_id">
+                {{ c.ciu_nom }}
+              </option>
+            </select>
+          </div>
         </div>
 
         <div class="form-actions">
-          <button class="btn-ghost" (click)="cancelarEdicion()" [disabled]="guardando">Cancelar</button>
+          <button class="btn-ghost" (click)="cancelarEdicion()" [disabled]="guardando">
+            Cancelar
+          </button>
           <button class="btn-primary" (click)="guardar()" [disabled]="guardando">
             <span *ngIf="!guardando"><i class="fa-solid fa-check"></i> Guardar cambios</span>
             <span *ngIf="guardando"><span class="spinner small"></span> Guardando...</span>

@@ -1,1 +1,158 @@
-<p>inventario works!</p>
+<div class="ph">
+  <h1>Inventario</h1>
+  <p>Administra el stock disponible de cada producto.</p>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="search-wrap">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input class="search-input" placeholder="Buscar producto…" [(ngModel)]="search" />
+  </div>
+  <span class="count-chip">{{ filteredInventario.length }} registros</span>
+  <div class="ml-auto">
+    <button class="btn-primary" (click)="openAdd()">
+      <i class="fa-solid fa-plus"></i>
+      <span>Rellenar stock</span>
+    </button>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div *ngIf="loading" style="text-align: center; padding: 20px">Cargando...</div>
+
+<div class="t-wrap" *ngIf="!loading">
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 56px">ID</th>
+        <th>Producto</th>
+        <th style="width: 120px">Stock</th>
+        <th style="width: 100px">Estado</th>
+        <th style="width: 96px; text-align: right; padding-right: 20px">Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <!-- ADD ROW -->
+      <tr *ngIf="addOpen">
+        <td class="td-dim td-num">—</td>
+
+        <td colspan="3">
+          <div style="display: flex; align-items: center; gap: 10px; max-width: 480px">
+            <select class="inline-input" [(ngModel)]="newProductoId" style="flex: 1.4">
+              <option [ngValue]="null" disabled>Selecciona un producto</option>
+              <option *ngFor="let p of productosDisponibles" [ngValue]="p.prd_id">
+                {{ p.prd_nom }}
+              </option>
+            </select>
+
+            <input
+              class="inline-input"
+              type="number"
+              [min]="productoSeleccionadoNuevo?.prd_stk_min ?? 0"
+              [(ngModel)]="newStock"
+              [placeholder]="'Mín: ' + (productoSeleccionadoNuevo?.prd_stk_min ?? 0)"
+              style="flex: 0.6"
+              (keydown.enter)="saveInventario()"
+              (keydown.escape)="cancelAdd()"
+            />
+
+            <button class="btn-primary" style="padding: 7px 16px" (click)="saveInventario()">
+              <i class="fa-solid fa-check"></i>
+              Guardar
+            </button>
+
+            <button class="btn-ghost" style="padding: 7px 14px" (click)="cancelAdd()">
+              Cancelar
+            </button>
+          </div>
+        </td>
+
+        <td></td>
+      </tr>
+
+      <!-- DATA ROWS -->
+      <tr *ngFor="let item of filteredInventario">
+        <!-- EDIT MODE -->
+        <ng-container *ngIf="editingId === item.inv_id; else normalRow">
+          <td class="td-dim td-num">{{ item.inv_id }}</td>
+
+          <td colspan="3">
+            <div style="display: flex; align-items: center; gap: 10px; max-width: 480px">
+              <span style="flex: 1; font-size: 13px">{{ item.prd_nom }}</span>
+
+              <input
+                class="inline-input"
+                type="number"
+                min="0"
+                [(ngModel)]="editStock"
+                style="flex: 0.5"
+                (keydown.enter)="saveEdit(item)"
+                (keydown.escape)="cancelEdit()"
+              />
+
+              <button class="btn-primary" (click)="saveEdit(item)">
+                <i class="fa-solid fa-check"></i>
+                Guardar
+              </button>
+
+              <button class="btn-ghost" (click)="cancelEdit()">Cancelar</button>
+            </div>
+          </td>
+
+          <td></td>
+        </ng-container>
+
+        <!-- NORMAL MODE -->
+        <ng-template #normalRow>
+          <td class="td-dim td-num">{{ item.inv_id }}</td>
+
+          <td>
+            <div class="brand-cell">
+              <span style="font-weight: 500">{{ item.prd_nom }}</span>
+            </div>
+          </td>
+
+          <td class="td-dim">{{ item.inv_stk_act }}</td>
+
+          <td>
+            <span class="pill p-green" *ngIf="item.inv_est === 'A'">
+              <i class="fa-solid fa-circle"></i> Activo
+            </span>
+            <span class="pill p-red" *ngIf="item.inv_est !== 'A'">
+              <i class="fa-solid fa-circle"></i> Inactivo
+            </span>
+          </td>
+
+          <td>
+            <div class="td-actions">
+              <button class="btn-icon btn-icon-edit" (click)="startEdit(item)">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+
+              <button class="btn-icon btn-icon-del" (click)="deleteRegistro(item.inv_id)">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </ng-template>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- EMPTY -->
+  <div class="empty-state" *ngIf="filteredInventario.length === 0">
+    <div class="empty-icon">
+      <i class="fa-solid fa-box-open"></i>
+    </div>
+    <strong style="color: var(--text)">Sin resultados</strong>
+    <span>No se encontraron productos con ese criterio.</span>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast">
+  <i class="fa-solid fa-circle-check"></i>
+  <span id="toastMsg"></span>
+</div>

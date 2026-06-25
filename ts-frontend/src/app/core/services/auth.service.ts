@@ -27,6 +27,7 @@ interface UpdateProfilePayload {
   usu_ape?: string;
   usu_tel?: string | null;
   usu_dir?: string | null;
+  ciu_id?: number | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -78,8 +79,9 @@ export class AuthService {
   }
 
   updateProfile(usu_id: number, payload: UpdateProfilePayload): Observable<UsuarioModel | null> {
+    const usuariosUrl = `${environment.apiUrl}/usuarios`;
     return this.http
-      .patch<ApiResponse<UsuarioModel>>(`${this.baseUrl}/profile/${usu_id}`, payload)
+      .put<ApiResponse<UsuarioModel>>(`${usuariosUrl}/${usu_id}`, payload)
       .pipe(map((response) => this.unwrapResponse(response)));
   }
 }

@@ -230,6 +230,7 @@
   width: 100%;
   max-width: 440px;
   max-height: 90vh;
+  overflow-x: hidden;
   overflow-y: auto;
 }
 
@@ -287,6 +288,12 @@
 }
 
 .field input,
+.field select,
+.card-number-wrap input {
+  box-sizing: border-box;
+}
+
+.field input,
 .field select {
   background: var(--surface-2);
   border: 1px solid var(--border);
@@ -326,11 +333,15 @@
   position: absolute;
   right: 12px;
   top: 50%;
+  width: 18px;
+  text-align: center;
   transform: translateY(-50%);
   font-size: 18px;
   color: var(--text-muted);
 }
-
+.brand-mini.neutral {
+  color: var(--text-muted);
+}
 .brand-mini.visa {
   color: #4f86e8;
 }

@@ -2,7 +2,9 @@
   <div class="pay-header">
     <p class="pay-kicker">Mi cuenta</p>
     <h1>Métodos de pago</h1>
-    <p class="pay-sub">Administra tus tarjetas guardadas. Los pagos en esta plataforma son simulados.</p>
+    <p class="pay-sub">
+      Administra tus tarjetas guardadas. Los pagos en esta plataforma son simulados.
+    </p>
   </div>
 
   <div class="pay-info-grid">
@@ -50,7 +52,13 @@
       <div class="pay-card-icon" [ngClass]="tar.tar_marca">
         <i
           class="fa-brands"
-          [ngClass]="tar.tar_marca === 'visa' ? 'fa-cc-visa' : tar.tar_marca === 'mastercard' ? 'fa-cc-mastercard' : 'fa-credit-card'"
+          [ngClass]="
+            tar.tar_marca === 'visa'
+              ? 'fa-cc-visa'
+              : tar.tar_marca === 'mastercard'
+                ? 'fa-cc-mastercard'
+                : 'fa-credit-card'
+          "
         ></i>
       </div>
       <div class="pay-card-body">
@@ -90,12 +98,22 @@
 
       <div class="field">
         <label>Alias (opcional)</label>
-        <input type="text" placeholder="Ej: Tarjeta del trabajo" [(ngModel)]="form.alias" maxlength="40" />
+        <input
+          type="text"
+          placeholder="Ej: Tarjeta del trabajo"
+          [(ngModel)]="form.alias"
+          maxlength="40"
+        />
       </div>
 
       <div class="field">
         <label>Nombre del titular</label>
-        <input type="text" placeholder="Como aparece en la tarjeta" [(ngModel)]="form.titular" [class.error]="errores.titular" />
+        <input
+          type="text"
+          placeholder="Como aparece en la tarjeta"
+          [(ngModel)]="form.titular"
+          [class.error]="errores.titular"
+        />
         <span class="error-msg" *ngIf="errores.titular">{{ errores.titular }}</span>
       </div>
 
@@ -109,13 +127,19 @@
             type="text"
             inputmode="numeric"
             placeholder="0000 0000 0000 0000"
+            maxlength="19"
             [(ngModel)]="form.numero"
             (ngModelChange)="onNumeroInput()"
             [class.error]="errores.numero"
           />
+          <i *ngIf="marcaDetectada === 'visa'" class="fa-brands fa-cc-visa brand-mini visa"></i>
           <i
-            class="fa-brands brand-mini"
-            [ngClass]="marcaDetectada === 'visa' ? 'fa-cc-visa visa' : marcaDetectada === 'mastercard' ? 'fa-cc-mastercard mastercard' : 'fa-credit-card neutral'"
+            *ngIf="marcaDetectada === 'mastercard'"
+            class="fa-brands fa-cc-mastercard brand-mini mastercard"
+          ></i>
+          <i
+            *ngIf="marcaDetectada === 'desconocida'"
+            class="fa-solid fa-credit-card brand-mini neutral"
           ></i>
         </div>
         <span class="error-msg" *ngIf="errores.numero">{{ errores.numero }}</span>
@@ -138,7 +162,10 @@
         <div class="field">
           <label>
             CVV
-            <i class="fa-solid fa-circle-info tooltip-trigger" title="Los 3 o 4 dígitos al reverso de tu tarjeta. No lo guardamos."></i>
+            <i
+              class="fa-solid fa-circle-info tooltip-trigger"
+              title="Los 3 o 4 dígitos al reverso de tu tarjeta. No lo guardamos."
+            ></i>
           </label>
           <input
             type="password"

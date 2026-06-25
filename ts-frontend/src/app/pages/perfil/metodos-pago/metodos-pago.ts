@@ -1,10 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MetodoPagoService } from '../../../core/services/metodo-pago.service';
 import { TarjetaService } from '../../../core/services/tarjeta.service';
 import { MarcaTarjeta, TarjetaModel } from '../../../core/models/tarjeta.model';
 import { MetodoPagoModel } from '../../../core/models/metodo-pago.model';
+import { AuthService } from '../../../core/services/auth.service';
 
 interface NuevaTarjetaForm {
   titular: string;
@@ -22,7 +29,6 @@ interface NuevaTarjetaForm {
   styleUrl: './metodos-pago.css',
   changeDetection: ChangeDetectionStrategy.Default,
 })
-
 export class MetodosPago implements OnInit {
   metodosPago: MetodoPagoModel[] = [];
   tarjetas = signal<TarjetaModel[]>([]);
@@ -46,6 +52,8 @@ export class MetodosPago implements OnInit {
   constructor(
     private metodoPagoService: MetodoPagoService,
     private tarjetaService: TarjetaService,
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -55,18 +63,31 @@ export class MetodosPago implements OnInit {
 
   cargarMetodos(): void {
     this.metodoPagoService.getAll().subscribe({
-      next: (data) => (this.metodosPago = data.filter((m) => m.mpg_est === 'A')),
+      next: (data) => {
+        this.metodosPago = data.filter((m) => m.mpg_est === 'A');
+        this.cdr.detectChanges();
+      },
       error: (err) => console.error('Error cargando métodos de pago', err),
     });
   }
 
   cargarTarjetas(): void {
+    const usuario = this.authService.getCurrentUser();
+    if (!usuario) return;
+
     this.loading = true;
-    // simulamos una pequeña latencia para que el loader tenga sentido visual
-    setTimeout(() => {
-      this.tarjetas.set(this.tarjetaService.listar());
-      this.loading = false;
-    }, 350);
+    this.tarjetaService.getByUsuario(usuario.usu_id).subscribe({
+      next: (data) => {
+        this.tarjetas.set(data);
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error cargando tarjetas', err);
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   getMetodoNombre(mpg_id: number | null): string {
@@ -88,8 +109,9 @@ export class MetodosPago implements OnInit {
   }
 
   onNumeroInput(): void {
-    this.form.numero = this.form.numero.replace(/[^0-9]/g, '').slice(0, 19);
-    this.marcaDetectada = this.detectarMarca(this.form.numero);
+    const soloDigitos = this.form.numero.replace(/[^0-9]/g, '').slice(0, 16);
+    this.form.numero = soloDigitos.replace(/(.{4})/g, '$1 ').trim();
+    this.marcaDetectada = this.detectarMarca(soloDigitos);
   }
 
   onVencimientoInput(): void {
@@ -141,11 +163,9 @@ export class MetodosPago implements OnInit {
       e.titular = 'Ingresa el nombre como aparece en la tarjeta';
     }
 
-    const numero = this.form.numero;
-    if (numero.length < 13 || numero.length > 19) {
-      e.numero = 'El número debe tener entre 13 y 19 dígitos';
-    } else if (!this.luhnValido(numero)) {
-      e.numero = 'El número de tarjeta no es válido';
+    const numero = this.form.numero.replace(/\s/g, '');
+    if (numero.length !== 16) {
+      e.numero = 'El número debe tener 16 dígitos';
     } else if (this.marcaDetectada === 'desconocida') {
       e.numero = 'Por ahora solo aceptamos Visa o Mastercard';
     }
@@ -169,27 +189,43 @@ export class MetodosPago implements OnInit {
 
   guardar(): void {
     if (!this.validarForm()) return;
+    const usuario = this.authService.getCurrentUser();
+    if (!usuario) return;
 
     this.guardando = true;
-    // simulación: en un flujo real aquí iría la llamada a una pasarela de pago,
-    // que devuelve un token y nunca expone el número completo ni el cvv
-    setTimeout(() => {
-      this.tarjetaService.agregar({
+    this.tarjetaService
+      .create({
+        usu_id: usuario.usu_id,
         mpg_id: this.form.mpg_id!,
-        tar_alias: this.form.alias.trim() || `${this.marcaDetectada} terminada en ${this.form.numero.slice(-4)}`,
-        tar_ult4: this.form.numero.slice(-4),
+        tar_alias: this.form.alias.trim() || null,
+        tar_ult4: this.form.numero.replace(/\s/g, '').slice(-4),
         tar_marca: this.marcaDetectada,
         tar_titu: this.form.titular.trim(),
         tar_venc: this.form.vencimiento,
+      })
+      .subscribe({
+        next: () => {
+          this.cargarTarjetas();
+          this.guardando = false;
+          this.modalAbierto = false;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Error guardando tarjeta', err);
+          this.guardando = false;
+          this.errores.numero = 'No se pudo guardar la tarjeta. Intenta de nuevo.';
+          this.cdr.detectChanges();
+        },
       });
-      this.tarjetas.set(this.tarjetaService.listar());
-      this.guardando = false;
-      this.modalAbierto = false;
-    }, 600);
   }
 
   eliminar(tar_id: number): void {
-    this.tarjetaService.eliminar(tar_id);
-    this.tarjetas.set(this.tarjetaService.listar());
+    const usuario = this.authService.getCurrentUser();
+    if (!usuario) return;
+
+    this.tarjetaService.delete(tar_id, usuario.usu_id).subscribe({
+      next: () => this.cargarTarjetas(),
+      error: (err) => console.error('Error eliminando tarjeta', err),
+    });
   }
 }

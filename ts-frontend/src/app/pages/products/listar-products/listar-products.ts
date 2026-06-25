@@ -8,6 +8,8 @@ import { ProductoService } from '../../../core/services/producto.service';
 import { CategoriaService } from '../../../core/services/categoria.service';
 import { MarcaService } from '../../../core/services/marca.service';
 import { ActivatedRoute } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
+import { CarritoService } from '../../../core/services/carrito.service';
 
 
 @Component({
@@ -30,6 +32,8 @@ export class ListarProducts implements OnInit {
     private productoService: ProductoService,
     private categoriaService: CategoriaService,
     private marcaService: MarcaService,
+    private carritoService: CarritoService,
+    private authService: AuthService,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
   ) {}
@@ -108,7 +112,15 @@ export class ListarProducts implements OnInit {
     return this.marcas.find((m) => m.mar_id === mar_id)?.mar_nom ?? '';
   }
 
-  addToCart(prod: ProductoModel): void {
-    console.log('Agregar al carrito:', prod);
+addToCart(prod: ProductoModel): void {
+  const usuario = this.authService.getCurrentUser();
+  if (!usuario) {
+    return;
   }
+
+  this.carritoService.agregarProducto(usuario.usu_id, prod.prd_id, 1).subscribe({
+    next: () => console.log('Producto agregado al carrito'),
+    error: (err) => console.error('Error agregando al carrito', err),
+  });
+}
 }
