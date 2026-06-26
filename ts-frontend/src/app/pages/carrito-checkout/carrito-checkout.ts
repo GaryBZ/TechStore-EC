@@ -107,6 +107,8 @@ export class CarritoCheckout implements OnInit {
   }
 
   confirmarPedido(): void {
+    if (this.confirmando) return;
+
     const usuario = this.authService.getCurrentUser();
     if (!usuario || !this.carId) return;
 
@@ -123,8 +125,15 @@ export class CarritoCheckout implements OnInit {
     if (!tarjeta) return;
 
     this.confirmando = true;
+
     this.carritoService
-      .confirmarPedido(usuario.usu_id, this.carId, tarjeta.mpg_id, this.direccionEnvio.trim(), this.observaciones.trim())
+      .confirmarPedido(
+        usuario.usu_id,
+        this.carId,
+        tarjeta.mpg_id,
+        this.direccionEnvio.trim(),
+        this.observaciones.trim(),
+      )
       .subscribe({
         next: (pedido) => {
           this.confirmando = false;

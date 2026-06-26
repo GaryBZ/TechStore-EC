@@ -8,6 +8,7 @@ import { ProductoService } from '../../../core/services/producto.service';
 import { AuthService } from '../../../core/services/auth.service';
 interface InventarioConProducto extends InventarioModel {
   prd_nom?: string;
+  prd_stk_min?: number;
   prd_sku?: string;
 }
 @Component({
@@ -75,6 +76,7 @@ export class Inventario implements OnInit {
         ...inv,
         prd_nom: prod?.prd_nom ?? `Producto #${inv.prd_id}`,
         prd_sku: prod?.prd_sku ?? '',
+        prd_stk_min: prod?.prd_stk_min ?? 0,
       };
     });
   }

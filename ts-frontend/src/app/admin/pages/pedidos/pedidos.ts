@@ -31,7 +31,7 @@ export class Pedidos implements OnInit {
     { epd_id: 2, epd_nom: 'Procesando' },
     { epd_id: 3, epd_nom: 'Enviado' },
     { epd_id: 4, epd_nom: 'Entregado' },
-    { epd_id: 5, epd_nom: 'Cancelado' },
+    { epd_id: 21, epd_nom: 'Cancelado' },
   ];
 
   constructor(

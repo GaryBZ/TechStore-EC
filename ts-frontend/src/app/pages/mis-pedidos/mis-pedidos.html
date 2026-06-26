@@ -1,0 +1,90 @@
+<section class="orders-page">
+  <div class="ph">
+    <h1>Mis pedidos</h1>
+    <p>Revisa el estado y el historial de tus compras.</p>
+  </div>
+
+  <div *ngIf="loading" style="text-align: center; padding: 60px;">Cargando pedidos...</div>
+
+  <div *ngIf="!loading && pedidos.length === 0" class="empty-state">
+    <div class="empty-icon"><i class="fa-solid fa-receipt"></i></div>
+    <strong style="color: var(--text)">Aún no tienes pedidos</strong>
+    <span>Cuando realices una compra, aparecerá aquí.</span>
+  </div>
+
+  <div class="orders-list" *ngIf="!loading && pedidos.length > 0">
+    <article class="order-card" *ngFor="let ped of pedidos">
+      <div class="order-head" (click)="toggleExpandir(ped)">
+        <div class="order-head-left">
+          <div class="order-icon" [class.cancelado]="estaCancelado(ped)">
+            <i class="fa-solid" [ngClass]="estaCancelado(ped) ? 'fa-ban' : 'fa-box'"></i>
+          </div>
+          <div>
+            <h4>Pedido #{{ ped.ped_id }}</h4>
+            <p class="order-date">{{ ped.ped_fec | date: 'dd MMM yyyy, HH:mm' }}</p>
+          </div>
+        </div>
+
+        <div class="order-head-right">
+          <span class="order-total">${{ ped.ped_tot | number: '1.2-2' }}</span>
+          <span
+            class="status-pill"
+            [class.cancelado]="estaCancelado(ped)"
+            [class.entregado]="!estaCancelado(ped) && ped.epd_nom?.toLowerCase()?.includes('entregado')"
+          >
+            {{ ped.epd_nom }}
+          </span>
+          <i class="fa-solid fa-chevron-down expand-icon" [class.rotated]="expandidoId === ped.ped_id"></i>
+        </div>
+      </div>
+
+      <div class="order-body" *ngIf="expandidoId === ped.ped_id">
+        <!-- TIMELINE -->
+        <div class="timeline" *ngIf="!estaCancelado(ped)">
+          <div class="timeline-step" *ngFor="let paso of timelineDePedido(ped); let last = last">
+            <div class="step-marker" [class.completado]="paso.completado" [class.activo]="paso.activo">
+              <i class="fa-solid" [ngClass]="paso.icono"></i>
+            </div>
+            <span class="step-label" [class.activo]="paso.activo">{{ paso.nombre }}</span>
+            <div class="step-line" *ngIf="!last" [class.completado]="paso.completado"></div>
+          </div>
+        </div>
+
+        <div class="cancel-notice" *ngIf="estaCancelado(ped)">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          Este pedido fue cancelado.
+        </div>
+
+        <!-- DIRECCIÓN -->
+        <div class="order-info-row">
+          <i class="fa-solid fa-location-dot"></i>
+          <span>{{ ped.ped_dir_env }}</span>
+        </div>
+        <div class="order-info-row" *ngIf="ped.ped_obs">
+          <i class="fa-solid fa-note-sticky"></i>
+          <span>{{ ped.ped_obs }}</span>
+        </div>
+
+        <!-- ITEMS -->
+        <div *ngIf="cargandoDetalle[ped.ped_id]" style="text-align: center; padding: 16px;">
+          Cargando productos...
+        </div>
+
+        <div class="order-items" *ngIf="!cargandoDetalle[ped.ped_id]">
+          <div class="order-item" *ngFor="let item of detalleItems[ped.ped_id]">
+            <span class="item-name">{{ item.prd_nom }}</span>
+            <span class="item-qty">x{{ item.dpe_can }}</span>
+            <span class="item-price">${{ item.dpe_sub | number: '1.2-2' }}</span>
+          </div>
+        </div>
+
+        <!-- TOTALES -->
+        <div class="order-totals">
+          <div class="summary-row"><span>Subtotal</span><span>${{ ped.ped_sub | number: '1.2-2' }}</span></div>
+          <div class="summary-row"><span>IVA</span><span>${{ ped.ped_iva | number: '1.2-2' }}</span></div>
+          <div class="summary-row total"><span>Total</span><span>${{ ped.ped_tot | number: '1.2-2' }}</span></div>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>

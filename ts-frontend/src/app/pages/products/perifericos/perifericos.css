@@ -177,25 +177,6 @@
   align-items: center;
 }
 
-.card-media.gpu {
-  background: linear-gradient(140deg, #18313a, #0f1116);
-}
-.card-media.cpu {
-  background: linear-gradient(140deg, #3a2318, #0f1116);
-}
-.card-media.ram {
-  background: linear-gradient(140deg, #2e183a, #0f1116);
-}
-.card-media.ssd {
-  background: linear-gradient(140deg, #183a2f, #0f1116);
-}
-.card-media.cooler {
-  background: linear-gradient(140deg, #1b2f3a, #0f1116);
-}
-.card-media.board {
-  background: linear-gradient(140deg, #3a2f18, #0f1116);
-}
-
 .card-body {
   padding: 14px;
   display: grid;

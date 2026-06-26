@@ -12,6 +12,7 @@ import { ListarProducts } from './pages/products/listar-products/listar-products
 import { MetodosPago } from './pages/perfil/metodos-pago/metodos-pago';
 import { MiPerfil } from './pages/perfil/mi-perfil/mi-perfil';
 import { CarritoCheckout } from './pages/carrito-checkout/carrito-checkout';
+import { MisPedidos } from './pages/mis-pedidos/mis-pedidos';
 
 export const routes: Routes = [
   {
@@ -53,6 +54,10 @@ export const routes: Routes = [
   {
     path: 'checkout',
     component: CarritoCheckout,
+  },
+  {
+    path: 'mis-pedidos',
+    component: MisPedidos,
   },
   {
     path: 'admin',
