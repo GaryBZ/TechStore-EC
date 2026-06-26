@@ -16,11 +16,10 @@
       </div>
 
       <div class="nav-right">
-        <div class="nav-cart" title="Carrito">
+        <div class="nav-cart" title="Carrito" (click)="irAlCarrito()">
           <i class="fa-solid fa-cart-shopping"></i>
-          <span class="nav-cart-count">2</span>
+          <span class="nav-cart-count" *ngIf="cartCount() > 0">{{ cartCount() }}</span>
         </div>
-
         <!-- Usuario logueado -->
         <div class="nav-item" *ngIf="user()">
           <div class="nav-user" (click)="toggleDropdown()">

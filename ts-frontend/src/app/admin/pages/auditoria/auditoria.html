@@ -43,7 +43,7 @@
     <tbody>
       <tr *ngFor="let aud of filteredAuditoria">
         <td class="td-dim td-num">{{ aud.aud_id }}</td>
-        <td class="td-dim">{{ aud.usu_id ?? '—' }}</td>
+        <td class="td-dim">{{ getNombreUsuario(aud) }}</td>
         <td class="td-dim">{{ aud.aud_tab }}</td>
 
         <td>

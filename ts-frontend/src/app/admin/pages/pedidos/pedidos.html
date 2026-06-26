@@ -1,1 +1,131 @@
-<p>pedidos works!</p>
+<div class="ph">
+  <h1>Pedidos</h1>
+  <p>Administra los pedidos realizados por los clientes.</p>
+</div>
+
+<div class="toolbar">
+  <div class="search-wrap">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input class="search-input" placeholder="Buscar por # o cliente…" [(ngModel)]="search" />
+  </div>
+  <select class="filter-select" [(ngModel)]="filterEstado">
+    <option value="">Todos los estados</option>
+    <option *ngFor="let e of estadosUnicos" [value]="e">{{ e }}</option>
+  </select>
+  <span class="count-chip">{{ filteredPedidos.length }} pedidos</span>
+</div>
+
+<div *ngIf="loading" style="text-align: center; padding: 20px">Cargando...</div>
+
+<div class="t-wrap" *ngIf="!loading">
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 56px">ID</th>
+        <th>Cliente</th>
+        <th style="width: 130px">Fecha</th>
+        <th style="width: 100px">Total</th>
+        <th style="width: 150px">Estado</th>
+        <th style="width: 120px; text-align: right; padding-right: 20px">Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let ped of filteredPedidos">
+        <td class="td-dim td-num">#{{ ped.ped_id }}</td>
+
+        <td>
+          <div class="brand-cell">
+            <span style="font-weight: 500">{{ ped.usu_nom }} {{ ped.usu_ape }}</span>
+          </div>
+        </td>
+
+        <td class="td-dim">{{ ped.ped_fec | date: 'dd/MM/yyyy' }}</td>
+        <td class="td-dim">${{ ped.ped_tot | number: '1.2-2' }}</td>
+
+        <td>
+          <select
+            class="inline-input"
+            style="width: auto; padding: 5px 8px; font-size: 12px"
+            [ngModel]="ped.epd_id"
+            (ngModelChange)="cambiarEstado(ped, $event)"
+          >
+            <option *ngFor="let e of estadosDisponibles" [ngValue]="e.epd_id">
+              {{ e.epd_nom }}
+            </option>
+          </select>
+        </td>
+
+        <td>
+          <div class="td-actions">
+            <button class="btn-icon btn-icon-edit" title="Ver detalle" (click)="verDetalle(ped)">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+            <button class="btn-icon btn-icon-del" title="Cancelar" (click)="cancelarPedido(ped)">
+              <i class="fa-solid fa-ban"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="empty-state" *ngIf="filteredPedidos.length === 0">
+    <div class="empty-icon"><i class="fa-solid fa-receipt"></i></div>
+    <strong style="color: var(--text)">Sin resultados</strong>
+    <span>No se encontraron pedidos con ese criterio.</span>
+  </div>
+</div>
+
+<!-- MODAL DETALLE -->
+<div class="modal-overlay" *ngIf="modalAbierto" (click)="cerrarModal()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-head">
+      <h3>Pedido #{{ pedidoSeleccionado?.ped_id }}</h3>
+      <button class="modal-close" (click)="cerrarModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body" *ngIf="pedidoSeleccionado">
+      <div class="detalle-info">
+        <p><strong>Cliente:</strong> {{ pedidoSeleccionado.usu_nom }} {{ pedidoSeleccionado.usu_ape }}</p>
+        <p><strong>Correo:</strong> {{ pedidoSeleccionado.usu_cor }}</p>
+        <p><strong>Dirección de envío:</strong> {{ pedidoSeleccionado.ped_dir_env }}</p>
+        <p *ngIf="pedidoSeleccionado.ped_obs"><strong>Observaciones:</strong> {{ pedidoSeleccionado.ped_obs }}</p>
+      </div>
+
+      <div *ngIf="cargandoDetalle" style="text-align: center; padding: 20px">Cargando items...</div>
+
+      <table class="detalle-table" *ngIf="!cargandoDetalle">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cant.</th>
+            <th>P. Unit.</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of detalleItems">
+            <td>{{ item.prd_nom }}</td>
+            <td>{{ item.dpe_can }}</td>
+            <td>${{ item.dpe_pre_uni | number: '1.2-2' }}</td>
+            <td>${{ item.dpe_sub | number: '1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="detalle-totales">
+        <div class="summary-row"><span>Subtotal</span><span>${{ pedidoSeleccionado.ped_sub | number: '1.2-2' }}</span></div>
+        <div class="summary-row"><span>IVA</span><span>${{ pedidoSeleccionado.ped_iva | number: '1.2-2' }}</span></div>
+        <div class="summary-row total"><span>Total</span><span>${{ pedidoSeleccionado.ped_tot | number: '1.2-2' }}</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast">
+  <i class="fa-solid fa-circle-check"></i>
+  <span id="toastMsg"></span>
+</div>

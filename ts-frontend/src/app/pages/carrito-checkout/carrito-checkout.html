@@ -1,0 +1,67 @@
+<section class="cart-page">
+  <h1>Mi carrito</h1>
+
+  <div *ngIf="loading" style="text-align:center; padding: 40px;">Cargando carrito...</div>
+
+  <div *ngIf="!loading && items.length === 0" style="text-align:center; padding: 60px;">
+    Tu carrito está vacío.
+  </div>
+
+  <div class="cart-layout" *ngIf="!loading && items.length > 0">
+    <div class="cart-items">
+      <div class="cart-item" *ngFor="let item of items">
+        <img *ngIf="item.pro_img" [src]="item.pro_img" [alt]="item.prd_nom" class="item-img" />
+        <div class="item-info">
+          <h4>{{ item.prd_nom }}</h4>
+          <p class="sku">SKU-{{ item.prd_sku }}</p>
+          <p class="price">${{ item.dca_pre_uni | number: '1.2-2' }} c/u</p>
+        </div>
+
+        <div class="qty-control">
+          <button (click)="cambiarCantidad(item, item.dca_can - 1)">-</button>
+          <span>{{ item.dca_can }}</span>
+          <button (click)="cambiarCantidad(item, item.dca_can + 1)">+</button>
+        </div>
+
+        <div class="item-sub">${{ item.dca_sub | number: '1.2-2' }}</div>
+
+        <button class="remove-btn" (click)="eliminarItem(item)">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </div>
+
+    <aside class="cart-summary">
+      <h3>Resumen</h3>
+
+      <div class="summary-row"><span>Subtotal</span><span>${{ subtotal | number: '1.2-2' }}</span></div>
+      <div class="summary-row"><span>IVA (15%)</span><span>${{ iva | number: '1.2-2' }}</span></div>
+      <div class="summary-row total"><span>Total</span><span>${{ total | number: '1.2-2' }}</span></div>
+
+      <div class="field">
+        <label>Método de pago</label>
+        <select [(ngModel)]="tarjetaSeleccionada">
+          <option [ngValue]="null" disabled>Selecciona una tarjeta</option>
+          <option *ngFor="let t of tarjetas" [ngValue]="t.tar_id">
+            {{ t.tar_alias || (t.tar_marca + ' ****' + t.tar_ult4) }}
+          </option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Dirección de envío</label>
+        <input type="text" [(ngModel)]="direccionEnvio" placeholder="Calle, número, referencia" />
+      </div>
+
+      <div class="field">
+        <label>Observaciones (opcional)</label>
+        <input type="text" [(ngModel)]="observaciones" placeholder="Instrucciones de entrega..." />
+      </div>
+
+      <button class="btn-confirm" [disabled]="confirmando" (click)="confirmarPedido()">
+        <span *ngIf="!confirmando">Confirmar pedido</span>
+        <span *ngIf="confirmando">Procesando...</span>
+      </button>
+    </aside>
+  </div>
+</section>

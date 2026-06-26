@@ -5,6 +5,7 @@ import { UsuarioModel } from '../../core/models/usuario.model';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { CarritoService } from '../../core/services/carrito.service';
 
 @Component({
   selector: 'app-navbar',
@@ -16,20 +17,43 @@ export class Navbar {
   user = signal<UsuarioModel | null>(null);
   dropdownOpen = signal(false);
   searchTerm = signal('');
+  cartCount = signal(0);
 
   constructor(
     private router: Router,
     private authService: AuthService,
+    private carritoService: CarritoService,
     private el: ElementRef,
   ) {
     this.refreshUser();
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
       this.refreshUser();
+      this.refreshCartCount();
     });
   }
 
   refreshUser(): void {
     this.user.set(this.authService.getCurrentUser());
+  }
+
+  refreshCartCount(): void {
+    const usuario = this.authService.getCurrentUser();
+    if (!usuario) {
+      this.cartCount.set(0);
+      return;
+    }
+
+    this.carritoService.getCarrito(usuario.usu_id).subscribe({
+      next: (data) => {
+        const total = (data?.items ?? []).reduce((acc, item) => acc + item.dca_can, 0);
+        this.cartCount.set(total);
+      },
+      error: () => this.cartCount.set(0),
+    });
+  }
+
+  irAlCarrito(): void {
+    this.router.navigate(['/checkout']);
   }
 
   userInitial = computed(() => {

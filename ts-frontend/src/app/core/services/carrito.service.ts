@@ -40,4 +40,16 @@ export class CarritoService {
   eliminarItem(dca_id: number) {
     return this.http.delete<ApiResponse<unknown>>(`${this.baseUrl}/item/${dca_id}`);
   }
+
+  confirmarPedido(usu_id: number, car_id: number, mpg_id: number, dir_env: string, obs?: string) {
+    return this.http
+      .post<ApiResponse<any>>(`${environment.apiUrl}/pedido-checkout/confirmar`, {
+        usu_id,
+        car_id,
+        mpg_id,
+        dir_env,
+        obs,
+      })
+      .pipe(map((response) => this.unwrapResponse(response)));
+  }
 }

@@ -56,6 +56,12 @@ export class Auditoria implements OnInit {
     return [...new Set(this.auditorias.map((a) => a.aud_tab))].sort();
   }
 
+  getNombreUsuario(aud: AuditoriaModel): string {
+    if (!aud.usu_id) return 'Sistema';
+    if (!aud.usu_nom) return `Usuario #${aud.usu_id}`;
+    return `${aud.usu_nom} ${aud.usu_ape ?? ''}`.trim();
+  }
+
   get filteredAuditoria(): AuditoriaModel[] {
     return this.auditorias.filter((a) => {
       const matchSearch =

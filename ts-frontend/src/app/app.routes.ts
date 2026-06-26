@@ -11,6 +11,7 @@ import { ListarProducto } from './admin/pages/producto/listar-producto/listar-pr
 import { ListarProducts } from './pages/products/listar-products/listar-products';
 import { MetodosPago } from './pages/perfil/metodos-pago/metodos-pago';
 import { MiPerfil } from './pages/perfil/mi-perfil/mi-perfil';
+import { CarritoCheckout } from './pages/carrito-checkout/carrito-checkout';
 
 export const routes: Routes = [
   {
@@ -48,6 +49,10 @@ export const routes: Routes = [
   {
     path: 'perfil',
     component: MiPerfil,
+  },
+  {
+    path: 'checkout',
+    component: CarritoCheckout,
   },
   {
     path: 'admin',
