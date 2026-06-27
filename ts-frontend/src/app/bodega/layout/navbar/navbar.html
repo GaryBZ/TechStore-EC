@@ -1,0 +1,47 @@
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-brand-icon"><img src="logo ts blanco.svg" alt="TechStore logo" /></div>
+    <span>TechStore</span>
+  </div>
+
+  <div class="nav-links">
+    <a
+      class="nav-link"
+      routerLink="/bodega/dashboard"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <i class="fa-solid fa-house"></i> Dashboard
+    </a>
+
+    <a class="nav-link" routerLink="/bodega/productos" routerLinkActive="active">
+      <i class="fa-solid fa-boxes-packing"></i> Productos
+    </a>
+
+    <a class="nav-link" routerLink="/bodega/pedidos" routerLinkActive="active">
+      <i class="fa-solid fa-cart-shopping"></i> Pedidos
+    </a>
+
+    <a class="nav-link" routerLink="/bodega/inventario" routerLinkActive="active">
+      <i class="fa-solid fa-boxes-stacked"></i> Inventario
+    </a>
+
+    <a class="nav-link" routerLink="/bodega/movimientos-inventario" routerLinkActive="active">
+      <i class="fa-solid fa-boxes-packing"></i> Movimientos
+    </a>
+
+  </div>
+
+  <div class="nav-bottom">
+    <div class="nav-user">
+      <div class="nav-avatar"><i class="fa-solid fa-user-shield"></i></div>
+      <span>{{ user()!.usu_nom }}</span>
+      <button class="btn-icon btn-icon-exit" (click)="logout()" title="Cerrar sesión">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </button>
+    </div>
+    <button class="nav-logout" routerLink="/inicio" title="Ir al inicio">
+      <i class="fa-solid fa-right-from-bracket"></i> Modo Usuario
+    </button>
+  </div>
+</nav>

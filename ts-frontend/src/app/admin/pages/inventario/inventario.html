@@ -40,14 +40,25 @@
         <td class="td-dim td-num">—</td>
 
         <td colspan="3">
-          <div style="display: flex; align-items: center; gap: 10px; max-width: 480px">
-            <select class="inline-input" [(ngModel)]="newProductoId" style="flex: 1.4">
-              <option [ngValue]="null" disabled>Selecciona un producto</option>
-              <option *ngFor="let p of productosDisponibles" [ngValue]="p.prd_id">
-                {{ p.prd_nom }}
-              </option>
-            </select>
+          <div style="display: flex; align-items: center; gap: 15px; max-width: 480px">
+            <div class="search-select">
+              <input
+                class="inline-input"
+                placeholder="Buscar producto..."
+                [(ngModel)]="searchProducto"
+                (focus)="mostrarDropdown = true"
+              />
 
+              <div class="search-dropdown" *ngIf="mostrarDropdown && productosFiltrados.length">
+                <div
+                  class="search-option"
+                  *ngFor="let p of productosFiltrados"
+                  (click)="seleccionarProducto(p)"
+                >
+                  <span class="name">{{ p.prd_nom }}</span>
+                </div>
+              </div>
+            </div>
             <input
               class="inline-input"
               type="number"
@@ -80,7 +91,7 @@
           <td class="td-dim td-num">{{ item.inv_id }}</td>
 
           <td colspan="3">
-            <div style="display: flex; align-items: center; gap: 10px; max-width: 480px">
+            <div style="display: flex; align-items: center; gap: 15px; max-width: 480px">
               <span style="flex: 1; font-size: 13px">{{ item.prd_nom }}</span>
 
               <input
@@ -120,7 +131,7 @@
               <span style="font-weight: 500">{{ item.prd_stk_min }}</span>
             </div>
           </td>
-          
+
           <td class="td-dim">{{ item.inv_stk_act }}</td>
 
           <td>

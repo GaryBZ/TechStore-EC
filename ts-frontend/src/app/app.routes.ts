@@ -119,7 +119,10 @@ export const routes: Routes = [
       },
       {
         path: 'movimientos-inventario',
-        component: MovimientosInventario,
+        loadComponent: () =>
+          import('./admin/pages/movimientos-inventario/movimientos-inventario').then(
+            (m) => m.MovimientosInventario,
+          ),
       },
       {
         path: 'productos',
@@ -148,14 +151,41 @@ export const routes: Routes = [
   {
     path: 'bodega',
     canActivate: [roleGuard(['administrador', 'bodeguero'])],
+    loadComponent: () =>
+      import('./bodega/layout/bodega-layout/bodega-layout').then((m) => m.BodegaLayout),
     children: [
       {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full',
       },
-      { path: 'productos', component: ListarProducto },
-      { path: 'proveedores', component: ListarProveedor },
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./admin/pages/dashboard/dashboard').then((m) => m.Dashboard),
+      },
+      {
+        path: 'movimientos-inventario',
+        loadComponent: () =>
+          import('./admin/pages/movimientos-inventario/movimientos-inventario').then(
+            (m) => m.MovimientosInventario,
+          ),
+      },
+      {
+        path: 'inventario',
+        loadComponent: () =>
+          import('./admin/pages/inventario/inventario').then((m) => m.Inventario),
+      },
+      {
+        path: 'pedidos',
+        loadComponent: () => import('./admin/pages/pedidos/pedidos').then((m) => m.Pedidos),
+      },
+      {
+        path: 'productos',
+        loadComponent: () =>
+          import('./admin/pages/producto/listar-producto/listar-producto').then(
+            (m) => m.ListarProducto,
+          ),
+      },
     ],
   },
 

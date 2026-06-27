@@ -21,7 +21,8 @@ interface InventarioConProducto extends InventarioModel {
 export class Inventario implements OnInit {
   inventario: InventarioConProducto[] = [];
   productos: ProductoModel[] = [];
-
+  searchProducto = '';
+  mostrarDropdown = false;
   editingId: number | null = null;
   search = '';
   loading = false;
@@ -69,6 +70,20 @@ export class Inventario implements OnInit {
     });
   }
 
+  get productosFiltrados() {
+    const term = this.searchProducto.toLowerCase();
+
+    return this.productosDisponibles.filter(
+      (p) => p.prd_nom.toLowerCase().includes(term) || p.prd_sku?.toLowerCase().includes(term),
+    );
+  }
+
+  seleccionarProducto(p: ProductoModel): void {
+    this.newProductoId = p.prd_id;
+    this.searchProducto = p.prd_nom;
+    this.mostrarDropdown = false;
+  }
+
   private mapConProducto(data: InventarioModel[]): InventarioConProducto[] {
     return data.map((inv) => {
       const prod = this.productos.find((p) => p.prd_id === inv.prd_id);
@@ -92,14 +107,10 @@ export class Inventario implements OnInit {
     );
   }
 
-  /** Productos que aún no tienen inventario, para no duplicar registros */
   get productosDisponibles(): ProductoModel[] {
     const idsConInventario = new Set(this.inventario.map((i) => i.prd_id));
     return this.productos.filter((p) => !idsConInventario.has(p.prd_id));
   }
-
-  // ---------- Agregar ----------
-
   openAdd(): void {
     this.cancelEdit();
     this.newProductoId = null;

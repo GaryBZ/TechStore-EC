@@ -1,0 +1,22 @@
+.bodega-shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.nav {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 220px;
+  height: 100vh;
+}
+
+.bodega-content {
+  margin-left: 220px;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 10px 32px 60px;
+  box-sizing: border-box;
+}

@@ -220,3 +220,62 @@ tbody tr.data-row:hover td { background: rgba(124,58,237,0.025); }
   to   { opacity: 1; transform: translateY(0); }
 }
 .row-new { animation: rowSlideIn 0.22s ease; }
+
+.search-select {
+  position: relative;
+  flex: 1.4;
+  min-width: 240px;
+}
+
+.search-select .inline-input {
+  width: 90%;
+}
+
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  max-height: 220px;
+
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  overflow-y: auto;
+  z-index: 999;
+  box-shadow: 0 12px 30px rgba(0,0,0,.45);
+}
+
+/* Scroll */
+.search-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.search-dropdown::-webkit-scrollbar-thumb {
+  background: var(--surface-3);
+  border-radius: 999px;
+}
+
+.search-option {
+  padding: 10px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-option:hover {
+  background: rgba(124,58,237,.12);
+}
+.search-option:last-child {
+  border-bottom: none;
+}
+
+/* Nombre */
+.search-option .name {
+  display: block;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.3;
+}
