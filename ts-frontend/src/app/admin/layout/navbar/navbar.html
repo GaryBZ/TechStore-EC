@@ -51,9 +51,12 @@
     <div class="nav-user">
       <div class="nav-avatar"><i class="fa-solid fa-user-shield"></i></div>
       <span>Gary</span>
+      <button class="btn-icon btn-icon-exit" (click)="logout()" title="Cerrar sesión">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </button>
     </div>
-    <button class="nav-logout" routerLink="/authentication">
-      <i class="fa-solid fa-right-from-bracket"></i> Salir
+    <button class="nav-logout" routerLink="/inicio" title="Ir al inicio">
+      <i class="fa-solid fa-right-from-bracket"></i> Modo Usuario
     </button>
   </div>
 </nav>

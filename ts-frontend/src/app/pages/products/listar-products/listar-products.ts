@@ -10,6 +10,11 @@ import { MarcaService } from '../../../core/services/marca.service';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { CarritoService } from '../../../core/services/carrito.service';
+import { InventarioService } from '../../../core/services/inventario.service';
+
+interface ProductoConStock extends ProductoModel {
+  inv_stk_act: number;
+}
 
 @Component({
   selector: 'app-listar-products',
@@ -19,7 +24,7 @@ import { CarritoService } from '../../../core/services/carrito.service';
   changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ListarProducts implements OnInit {
-  products: ProductoModel[] = [];
+  products: ProductoConStock[] = [];
   categorias: CategoriaModel[] = [];
   marcas: MarcaModel[] = [];
   agregandoIds = new Set<number>();
@@ -31,6 +36,7 @@ export class ListarProducts implements OnInit {
   constructor(
     private productoService: ProductoService,
     private categoriaService: CategoriaService,
+    private inventarioService: InventarioService,
     private marcaService: MarcaService,
     private carritoService: CarritoService,
     private authService: AuthService,
@@ -66,6 +72,11 @@ export class ListarProducts implements OnInit {
     });
   }
 
+  esStockBajo(prod: ProductoConStock): boolean {
+    const min = prod.prd_stk_min ?? 0;
+    return prod.inv_stk_act <= min && prod.inv_stk_act > 0;
+  }
+
   buscar(): void {
     if (!this.query) {
       this.products = [];
@@ -76,17 +87,31 @@ export class ListarProducts implements OnInit {
 
     this.loading = true;
     this.productoService.getAll().subscribe({
-      next: (data) => {
-        const term = this.query.toLowerCase();
-        this.products = data.filter(
-          (p) => p.prd_est === 'A' && p.prd_nom.toLowerCase().includes(term),
-        );
-        this.loading = false;
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.loading = false;
-        this.cdr.detectChanges();
+      next: (productos) => {
+        this.inventarioService.getAll().subscribe({
+          next: (inventario) => {
+            const term = this.query.toLowerCase();
+
+            this.products = productos
+              .filter((p) => p.prd_est === 'A' && p.prd_nom.toLowerCase().includes(term))
+              .map((p) => {
+                const inv = inventario.find((i) => i.prd_id === p.prd_id);
+
+                return {
+                  ...p,
+                  inv_stk_act: inv?.inv_stk_act ?? 0,
+                };
+              })
+              .filter((p) => p.inv_stk_act > 0);
+
+            this.loading = false;
+            this.cdr.detectChanges();
+          },
+          error: () => {
+            this.loading = false;
+            this.cdr.detectChanges();
+          },
+        });
       },
     });
   }
@@ -95,7 +120,7 @@ export class ListarProducts implements OnInit {
     // se aplica directamente en el getter sortedProducts
   }
 
-  get sortedProducts(): ProductoModel[] {
+  get sortedProducts(): ProductoConStock[] {
     let result = [...this.products];
     if (this.sortBy === 'precio-asc') result = result.sort((a, b) => a.prd_pre_ven - b.prd_pre_ven);
     if (this.sortBy === 'precio-desc')
@@ -112,7 +137,7 @@ export class ListarProducts implements OnInit {
   }
 
   addToCart(prod: ProductoModel): void {
-    if (this.agregandoIds.has(prod.prd_id)) return; // ya hay una petición en curso para este producto
+    if (this.agregandoIds.has(prod.prd_id)) return;
 
     const usuario = this.authService.getCurrentUser();
     if (!usuario) {
@@ -124,6 +149,9 @@ export class ListarProducts implements OnInit {
     this.carritoService.agregarProducto(usuario.usu_id, prod.prd_id, 1).subscribe({
       next: () => {
         console.log('Producto agregado al carrito');
+
+        this.carritoService.notificarCambioCarrito();
+
         this.agregandoIds.delete(prod.prd_id);
       },
       error: (err) => {

@@ -79,6 +79,13 @@
         <div class="card-body">
           <div class="card-top">
             <span class="badge">{{ getCategoriaNombre(prod.cat_id) }}</span>
+            <span class="stock-badge" [class.low]="esStockBajo(prod)">
+              <i
+                class="fa-solid"
+                [ngClass]="esStockBajo(prod) ? 'fa-triangle-exclamation' : 'fa-box'"
+              ></i>
+              {{ esStockBajo(prod) ? '¡Últimas unidades!' : prod.inv_stk_act + ' disponibles' }}
+            </span>
           </div>
           <p class="sku">SKU-{{ prod.prd_sku }}</p>
           <h3>{{ prod.prd_nom }}</h3>

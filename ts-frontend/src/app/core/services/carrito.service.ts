@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environment/environment';
 import { CarritoConDetalleModel, CarritoItemModel } from '../models/carrito-item.model';
@@ -10,7 +10,13 @@ type ApiResponse<T> = { ok: boolean; data: T } | T;
 export class CarritoService {
   private readonly baseUrl = `${environment.apiUrl}/carrito-detalle`;
 
+  carritoActualizado = signal(0);
+
   constructor(private http: HttpClient) {}
+
+  notificarCambioCarrito(): void {
+    this.carritoActualizado.update((v) => v + 1);
+  }
 
   private unwrapResponse<T>(response: ApiResponse<T>): T | null {
     if (response && typeof response === 'object' && 'data' in response) {

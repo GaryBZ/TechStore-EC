@@ -9,6 +9,13 @@ import { ProductoService } from '../../../core/services/producto.service';
 import { CategoriaService } from '../../../core/services/categoria.service';
 import { MarcaService } from '../../../core/services/marca.service';
 import { TipoService } from '../../../core/services/tipo.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { CarritoService } from '../../../core/services/carrito.service';
+import { InventarioService } from '../../../core/services/inventario.service';
+
+interface ProductoConStock extends ProductoModel {
+  inv_stk_act: number;
+}
 
 @Component({
   selector: 'app-monitores',
@@ -18,10 +25,11 @@ import { TipoService } from '../../../core/services/tipo.service';
   changeDetection: ChangeDetectionStrategy.Default,
 })
 export class Monitores implements OnInit {
-  products: ProductoModel[] = [];
+  products: ProductoConStock[] = [];
   categorias: CategoriaModel[] = [];
   marcas: MarcaModel[] = [];
-  tipomonitores: TipoModel | null = null;
+  agregandoIds = new Set<number>();
+  tipoComponentes: TipoModel | null = null;
 
   selectedMarcas: number[] = [];
   selectedCategorias: number[] = [];
@@ -37,6 +45,9 @@ export class Monitores implements OnInit {
     private categoriaService: CategoriaService,
     private marcaService: MarcaService,
     private tipoService: TipoService,
+    private authService: AuthService,
+    private carritoService: CarritoService,
+    private inventarioService: InventarioService,
     private cdr: ChangeDetectorRef,
   ) {}
 
@@ -68,27 +79,47 @@ export class Monitores implements OnInit {
     this.loading = true;
     this.tipoService.getAll().subscribe({
       next: (tipos) => {
-        const monitores = tipos.find((t) => t.tip_nom.toLowerCase() === 'monitores');
-        if (monitores) {
-          this.tipomonitores = monitores;
-          this.productoService.getByTipo(monitores.tip_id).subscribe({
-            next: (data) => {
-              this.products = data;
-              this.setPriceRange();
-              this.loading = false;
-              this.cdr.detectChanges();
-            },
-            error: () => {
-              this.loading = false;
-            },
-          });
-        } else {
+        const componentes = tipos.find((t) => t.tip_nom.toLowerCase() === 'monitores');
+        if (!componentes) {
           this.loading = false;
+          this.cdr.detectChanges();
+          return;
         }
+
+        this.tipoComponentes = componentes;
+
+        this.productoService.getByTipo(componentes.tip_id).subscribe({
+          next: (productos) => {
+            this.inventarioService.getAll().subscribe({
+              next: (inventario) => {
+                this.products = productos
+                  .filter((p) => p.prd_est === 'A')
+                  .map((p) => {
+                    const inv = inventario.find((i) => i.prd_id === p.prd_id);
+                    return { ...p, inv_stk_act: inv?.inv_stk_act ?? 0 };
+                  })
+                  .filter((p) => p.inv_stk_act > 0);
+
+                this.setPriceRange();
+                this.loading = false;
+                this.cdr.detectChanges();
+              },
+              error: () => {
+                this.loading = false;
+                this.cdr.detectChanges();
+              },
+            });
+          },
+          error: () => {
+            this.loading = false;
+            this.cdr.detectChanges();
+          },
+        });
       },
       error: (err) => {
         console.error('Error cargando tipos', err);
         this.loading = false;
+        this.cdr.detectChanges();
       },
     });
   }
@@ -121,18 +152,15 @@ export class Monitores implements OnInit {
     this.maxPrice = this.globalMax;
   }
 
-  applySort(): void {
-    // se aplica directamente en el getter filteredProducts
-  }
+  applySort(): void {}
 
-  get filteredProducts(): ProductoModel[] {
+  get filteredProducts(): ProductoConStock[] {
     let result = this.products.filter((p) => {
       const matchMarca = this.selectedMarcas.length === 0 || this.selectedMarcas.includes(p.mar_id);
       const matchCat =
         this.selectedCategorias.length === 0 || this.selectedCategorias.includes(p.cat_id);
       const matchPrice = p.prd_pre_ven >= this.minPrice && p.prd_pre_ven <= this.maxPrice;
-      const matchEstado = p.prd_est === 'A';
-      return matchMarca && matchCat && matchPrice && matchEstado;
+      return matchMarca && matchCat && matchPrice;
     });
 
     if (this.sortBy === 'precio-asc')
@@ -161,8 +189,33 @@ export class Monitores implements OnInit {
     return this.categorias.filter((c) => idsEnUso.has(c.cat_id));
   }
 
+  esStockBajo(prod: ProductoConStock): boolean {
+    const min = prod.prd_stk_min ?? 0;
+    return prod.inv_stk_act <= min && prod.inv_stk_act > 0;
+  }
+
   addToCart(prod: ProductoModel): void {
-    console.log('Agregar al carrito:', prod);
-    // aquí luego conectamos con CarritoService
+    if (this.agregandoIds.has(prod.prd_id)) return;
+
+    const usuario = this.authService.getCurrentUser();
+    if (!usuario) {
+      return;
+    }
+
+    this.agregandoIds.add(prod.prd_id);
+
+    this.carritoService.agregarProducto(usuario.usu_id, prod.prd_id, 1).subscribe({
+      next: () => {
+        console.log('Producto agregado al carrito');
+
+        this.carritoService.notificarCambioCarrito();
+
+        this.agregandoIds.delete(prod.prd_id);
+      },
+      error: (err) => {
+        console.error('Error agregando al carrito', err);
+        this.agregandoIds.delete(prod.prd_id);
+      },
+    });
   }
 }

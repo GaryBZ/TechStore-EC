@@ -36,17 +36,20 @@
         <div class="card-body">
           <div class="card-top">
             <span class="badge">{{ getCategoriaNombre(prod.cat_id) }}</span>
+            <span class="stock-badge" [class.low]="esStockBajo(prod)">
+              <i
+                class="fa-solid"
+                [ngClass]="esStockBajo(prod) ? 'fa-triangle-exclamation' : 'fa-box'"
+              ></i>
+              {{ esStockBajo(prod) ? '¡Últimas unidades!' : prod.inv_stk_act + ' disponibles' }}
+            </span>
           </div>
           <p class="sku">SKU-{{ prod.prd_sku }}</p>
           <h3>{{ prod.prd_nom }}</h3>
           <p class="meta">{{ getMarcaNombre(prod.mar_id) }} — {{ prod.prd_des }}</p>
           <div class="card-bottom">
             <span class="price">${{ prod.prd_pre_ven | number: '1.0-2' }}</span>
-            <button
-              class="add-cart-btn"
-              [disabled]="agregandoIds.has(prod.prd_id)"
-              (click)="addToCart(prod)"
-            >
+            <button class="add-cart-btn" (click)="addToCart(prod)">
               <i class="fa-solid fa-cart-shopping"></i>
             </button>
           </div>

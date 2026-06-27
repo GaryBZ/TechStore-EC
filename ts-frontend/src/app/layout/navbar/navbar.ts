@@ -1,4 +1,13 @@
-import { Component, computed, ElementRef, HostListener, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  HostListener,
+  signal,
+} from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { UsuarioModel } from '../../core/models/usuario.model';
@@ -12,6 +21,7 @@ import { CarritoService } from '../../core/services/carrito.service';
   imports: [RouterModule, CommonModule, FormsModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class Navbar {
   user = signal<UsuarioModel | null>(null);
@@ -24,10 +34,18 @@ export class Navbar {
     private authService: AuthService,
     private carritoService: CarritoService,
     private el: ElementRef,
+    private cdr: ChangeDetectorRef,
   ) {
     this.refreshUser();
+    this.refreshCartCount();
+
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
       this.refreshUser();
+      this.refreshCartCount();
+    });
+
+    effect(() => {
+      this.carritoService.carritoActualizado();
       this.refreshCartCount();
     });
   }

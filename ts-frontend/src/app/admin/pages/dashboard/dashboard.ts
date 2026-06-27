@@ -1,8 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environment/environment';
 import Chart from 'chart.js/auto';
+import { FormsModule } from '@angular/forms';
 
 interface MetricasDashboard {
   pedidos_pendientes: number;
@@ -31,7 +39,7 @@ interface PedidoPorEstado {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
   changeDetection: ChangeDetectionStrategy.Default,
@@ -48,6 +56,10 @@ export class Dashboard implements OnInit {
   ejecutandoRespaldo = false;
   loadingHistorial = false;
   mostrarHistorial = false;
+  modalRestaurarAbierto = false;
+  archivoARestaurar: string | null = null;
+  textoConfirmacion = '';
+  restaurando = false;
 
   private chartVentas: Chart | null = null;
   private chartEstados: Chart | null = null;
@@ -64,6 +76,41 @@ export class Dashboard implements OnInit {
     this.cargarPedidosPorEstado();
   }
 
+  abrirModalRestaurar(archivo: string): void {
+    this.archivoARestaurar = archivo;
+    this.textoConfirmacion = '';
+    this.modalRestaurarAbierto = true;
+  }
+
+  cerrarModalRestaurar(): void {
+    if (this.restaurando) return;
+    this.modalRestaurarAbierto = false;
+    this.archivoARestaurar = null;
+    this.textoConfirmacion = '';
+  }
+
+  confirmarRestauracion(): void {
+    if (this.textoConfirmacion !== 'CONFIRMAR' || !this.archivoARestaurar) return;
+
+    this.restaurando = true;
+    this.http
+      .post<any>(`${environment.apiUrl}/backup/restaurar`, {
+        archivo: this.archivoARestaurar,
+        confirmacion: this.textoConfirmacion,
+      })
+      .subscribe({
+        next: (res) => {
+          this.restaurando = false;
+          this.modalRestaurarAbierto = false;
+          alert(res.message || 'Base de datos restaurada correctamente. Recarga la página.');
+          window.location.reload();
+        },
+        error: (err) => {
+          this.restaurando = false;
+          alert(err.error?.message || 'Error al restaurar el respaldo');
+        },
+      });
+  }
   cargarMetricas(): void {
     this.loadingMetricas = true;
     this.http.get<any>(`${environment.apiUrl}/dashboard/metricas`).subscribe({
@@ -122,14 +169,16 @@ export class Dashboard implements OnInit {
       type: 'bar',
       data: {
         labels,
-        datasets: [{
-          label: 'Ventas ($)',
-          data: valores,
-          backgroundColor: 'rgba(124, 58, 237, 0.5)',
-          borderColor: '#7c3aed',
-          borderWidth: 1,
-          borderRadius: 6,
-        }],
+        datasets: [
+          {
+            label: 'Ventas ($)',
+            data: valores,
+            backgroundColor: 'rgba(124, 58, 237, 0.5)',
+            borderColor: '#7c3aed',
+            borderWidth: 1,
+            borderRadius: 6,
+          },
+        ],
       },
       options: {
         responsive: true,
@@ -154,11 +203,13 @@ export class Dashboard implements OnInit {
       type: 'doughnut',
       data: {
         labels,
-        datasets: [{
-          data: valores,
-          backgroundColor: ['#7c3aed', '#3b82f6', '#22c55e', '#f59e0b', '#ef4444'],
-          borderWidth: 0,
-        }],
+        datasets: [
+          {
+            data: valores,
+            backgroundColor: ['#7c3aed', '#3b82f6', '#22c55e', '#f59e0b', '#ef4444'],
+            borderWidth: 0,
+          },
+        ],
       },
       options: {
         responsive: true,

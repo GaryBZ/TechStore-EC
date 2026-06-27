@@ -130,6 +130,7 @@
             <th>Fecha</th>
             <th>Tipo</th>
             <th>Archivo</th>
+            <th style="text-align: right">Acción</th>
           </tr>
         </thead>
         <tbody>
@@ -145,6 +146,11 @@
               </span>
             </td>
             <td class="td-dim">{{ r.res_archivo }}</td>
+            <td style="text-align: right">
+              <button class="btn-restore" (click)="abrirModalRestaurar(r.res_archivo)">
+                <i class="fa-solid fa-rotate-left"></i> Restaurar
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -158,3 +164,54 @@
     </div>
   </div>
 </section>
+
+<!-- MODAL RESTAURAR -->
+<div class="modal-overlay" *ngIf="modalRestaurarAbierto" (click)="cerrarModalRestaurar()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-head">
+      <h3><i class="fa-solid fa-triangle-exclamation"></i> Restaurar base de datos</h3>
+      <button class="modal-close" (click)="cerrarModalRestaurar()" [disabled]="restaurando">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="warning-box">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <p>
+          Esta acción <strong>reemplazará todos los datos actuales</strong> con los del respaldo
+          seleccionado. Cualquier pedido, producto, o cambio realizado después de este respaldo
+          <strong>se perderá permanentemente</strong>. Esta acción no se puede deshacer.
+        </p>
+      </div>
+
+      <p class="archivo-seleccionado">
+        Archivo a restaurar: <strong>{{ archivoARestaurar }}</strong>
+      </p>
+
+      <div class="field">
+        <label>Escribe <strong>CONFIRMAR</strong> para continuar</label>
+        <input
+          type="text"
+          [(ngModel)]="textoConfirmacion"
+          placeholder="CONFIRMAR"
+          [disabled]="restaurando"
+        />
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-ghost" (click)="cerrarModalRestaurar()" [disabled]="restaurando">
+        Cancelar
+      </button>
+      <button
+        class="btn-danger"
+        [disabled]="textoConfirmacion !== 'CONFIRMAR' || restaurando"
+        (click)="confirmarRestauracion()"
+      >
+        <span *ngIf="!restaurando">Restaurar ahora</span>
+        <span *ngIf="restaurando">Restaurando...</span>
+      </button>
+    </div>
+  </div>
+</div>

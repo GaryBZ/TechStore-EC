@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, signal } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
+import { UsuarioModel } from '../../../core/models/usuario.model';
 
 @Component({
   selector: 'app-navbar',
@@ -7,4 +9,17 @@ import { RouterModule } from '@angular/router';
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
-export class Navbar {}
+export class Navbar {
+  user = signal<UsuarioModel | null>(null);
+
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+  ) {}
+
+  logout(): void {
+    this.authService.logout();
+    this.user.set(null);
+    this.router.navigate(['/authentication']);
+  }
+}
