@@ -13,6 +13,7 @@ import { MetodosPago } from './pages/perfil/metodos-pago/metodos-pago';
 import { MiPerfil } from './pages/perfil/mi-perfil/mi-perfil';
 import { CarritoCheckout } from './pages/carrito-checkout/carrito-checkout';
 import { MisPedidos } from './pages/mis-pedidos/mis-pedidos';
+import { MovimientosInventario } from './admin/pages/movimientos-inventario/movimientos-inventario';
 
 export const routes: Routes = [
   {
@@ -115,6 +116,10 @@ export const routes: Routes = [
       {
         path: 'pedidos',
         loadComponent: () => import('./admin/pages/pedidos/pedidos').then((m) => m.Pedidos),
+      },
+      {
+        path: 'movimientos-inventario',
+        component: MovimientosInventario,
       },
       {
         path: 'productos',

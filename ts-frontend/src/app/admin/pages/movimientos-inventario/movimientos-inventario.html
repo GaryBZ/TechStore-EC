@@ -1,0 +1,72 @@
+<div class="ph">
+  <h1>Movimientos de inventario</h1>
+  <p>Historial de entradas, salidas y ajustes de stock.</p>
+</div>
+
+<div class="toolbar">
+  <div class="search-wrap">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input
+      class="search-input"
+      placeholder="Buscar por producto, usuario o # pedido…"
+      [(ngModel)]="search"
+    />
+  </div>
+  <select class="filter-select" [(ngModel)]="filterTipo">
+    <option value="">Todos los tipos</option>
+    <option *ngFor="let t of tiposUnicos" [value]="t">{{ t }}</option>
+  </select>
+  <span class="count-chip">{{ filteredMovimientos.length }} movimientos</span>
+</div>
+
+<div *ngIf="loading" style="text-align: center; padding: 20px">Cargando...</div>
+
+<div class="t-wrap" *ngIf="!loading">
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 56px">ID</th>
+        <th>Producto</th>
+        <th style="width: 110px">Tipo</th>
+        <th style="width: 70px">Cant.</th>
+        <th>Motivo</th>
+        <th style="width: 130px">Usuario</th>
+        <th style="width: 150px">Fecha</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let mov of filteredMovimientos">
+        <td class="td-dim td-num">#{{ mov.mov_id }}</td>
+
+        <td>
+          <div class="brand-cell">
+            <span style="font-weight: 500">{{ mov.prd_nom }}</span>
+            <span class="td-dim" style="font-size: 11px">{{ mov.prd_sku }}</span>
+          </div>
+        </td>
+
+        <td>
+          <span class="pill" [ngClass]="badgeClass(mov.mov_tip)">
+            <i class="fa-solid" [ngClass]="badgeIcon(mov.mov_tip)"></i>
+            {{ mov.mov_tip }}
+          </span>
+        </td>
+
+        <td class="td-dim td-num">{{ mov.mov_can }}</td>
+
+        <td class="td-dim" style="font-size: 12px">{{ mov.mov_mot || '—' }}</td>
+
+        <td class="td-dim">{{ mov.usu_nom }}</td>
+
+        <td class="td-dim">{{ mov.mov_fec | date: 'dd/MM/yyyy HH:mm' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="empty-state" *ngIf="filteredMovimientos.length === 0">
+    <div class="empty-icon"><i class="fa-solid fa-truck-ramp-box"></i></div>
+    <strong style="color: var(--text)">Sin resultados</strong>
+    <span>No se encontraron movimientos con ese criterio.</span>
+  </div>
+</div>

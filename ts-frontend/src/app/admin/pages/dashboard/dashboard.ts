@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environment/environment';
+import Chart from 'chart.js/auto';
 
 interface MetricasDashboard {
   pedidos_pendientes: number;
@@ -18,6 +19,15 @@ interface RespaldoModel {
   res_archivo: string;
 }
 
+interface VentaDiaria {
+  dia: string;
+  total: number;
+}
+
+interface PedidoPorEstado {
+  epd_nom: string;
+  cantidad: number;
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -27,6 +37,9 @@ interface RespaldoModel {
   changeDetection: ChangeDetectionStrategy.Default,
 })
 export class Dashboard implements OnInit {
+  @ViewChild('ventasCanvas') ventasCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('estadosCanvas') estadosCanvas!: ElementRef<HTMLCanvasElement>;
+
   metricas: MetricasDashboard | null = null;
   loadingMetricas = false;
 
@@ -36,6 +49,9 @@ export class Dashboard implements OnInit {
   loadingHistorial = false;
   mostrarHistorial = false;
 
+  private chartVentas: Chart | null = null;
+  private chartEstados: Chart | null = null;
+
   constructor(
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
@@ -44,6 +60,8 @@ export class Dashboard implements OnInit {
   ngOnInit(): void {
     this.cargarMetricas();
     this.cargarUltimoRespaldo();
+    this.cargarVentasSemana();
+    this.cargarPedidosPorEstado();
   }
 
   cargarMetricas(): void {
@@ -69,6 +87,86 @@ export class Dashboard implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Error cargando respaldo', err),
+    });
+  }
+
+  cargarVentasSemana(): void {
+    this.http.get<any>(`${environment.apiUrl}/dashboard/ventas-semana`).subscribe({
+      next: (res) => {
+        setTimeout(() => this.renderVentasChart(res.data ?? []));
+      },
+      error: (err) => console.error('Error cargando ventas semanales', err),
+    });
+  }
+
+  cargarPedidosPorEstado(): void {
+    this.http.get<any>(`${environment.apiUrl}/dashboard/pedidos-por-estado`).subscribe({
+      next: (res) => {
+        setTimeout(() => this.renderEstadosChart(res.data ?? []));
+      },
+      error: (err) => console.error('Error cargando pedidos por estado', err),
+    });
+  }
+
+  private renderVentasChart(datos: VentaDiaria[]): void {
+    if (!this.ventasCanvas) return;
+    if (this.chartVentas) this.chartVentas.destroy();
+
+    const labels = datos.map((d) => {
+      const fecha = new Date(d.dia);
+      return fecha.toLocaleDateString('es-EC', { weekday: 'short', day: 'numeric' });
+    });
+    const valores = datos.map((d) => d.total);
+
+    this.chartVentas = new Chart(this.ventasCanvas.nativeElement, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Ventas ($)',
+          data: valores,
+          backgroundColor: 'rgba(124, 58, 237, 0.5)',
+          borderColor: '#7c3aed',
+          borderWidth: 1,
+          borderRadius: 6,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#888' }, grid: { color: '#222' } },
+          y: { ticks: { color: '#888' }, grid: { color: '#222' } },
+        },
+      },
+    });
+  }
+
+  private renderEstadosChart(datos: PedidoPorEstado[]): void {
+    if (!this.estadosCanvas) return;
+    if (this.chartEstados) this.chartEstados.destroy();
+
+    const labels = datos.map((d) => d.epd_nom);
+    const valores = datos.map((d) => d.cantidad);
+
+    this.chartEstados = new Chart(this.estadosCanvas.nativeElement, {
+      type: 'doughnut',
+      data: {
+        labels,
+        datasets: [{
+          data: valores,
+          backgroundColor: ['#7c3aed', '#3b82f6', '#22c55e', '#f59e0b', '#ef4444'],
+          borderWidth: 0,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { color: '#888', font: { size: 11 } } },
+        },
+      },
     });
   }
 

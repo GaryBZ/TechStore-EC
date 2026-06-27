@@ -39,7 +39,11 @@
     </div>
 
     <div class="metric-card" [class.warning-card]="metricas.productos_bajo_stock > 0">
-      <div class="metric-icon" [class.warning]="metricas.productos_bajo_stock > 0" [class.green]="metricas.productos_bajo_stock === 0">
+      <div
+        class="metric-icon"
+        [class.warning]="metricas.productos_bajo_stock > 0"
+        [class.green]="metricas.productos_bajo_stock === 0"
+      >
         <i class="fa-solid fa-box-open"></i>
       </div>
       <div>
@@ -49,13 +53,38 @@
     </div>
   </div>
 
-  <div *ngIf="loadingMetricas" style="text-align: center; padding: 30px;">Cargando métricas...</div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>Ventas últimos 7 días</h3>
+      <div class="chart-wrap">
+        <canvas #ventasCanvas></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <h3>Pedidos por estado</h3>
+      <div class="chart-wrap">
+        <canvas #estadosCanvas></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loadingMetricas" style="text-align: center; padding: 30px">Cargando métricas...</div>
 
   <!-- RESPALDO -->
   <div class="backup-section">
-    <div class="backup-card" [class.alerta]="estadoRespaldo === 'alerta'" [class.critico]="estadoRespaldo === 'critico'">
+    <div
+      class="backup-card"
+      [class.alerta]="estadoRespaldo === 'alerta'"
+      [class.critico]="estadoRespaldo === 'critico'"
+    >
       <div class="backup-info">
-        <div class="backup-icon" [class.ok]="estadoRespaldo === 'ok'" [class.alerta]="estadoRespaldo === 'alerta'" [class.critico]="estadoRespaldo === 'critico'">
+        <div
+          class="backup-icon"
+          [class.ok]="estadoRespaldo === 'ok'"
+          [class.alerta]="estadoRespaldo === 'alerta'"
+          [class.critico]="estadoRespaldo === 'critico'"
+        >
           <i class="fa-solid fa-database"></i>
         </div>
         <div>
@@ -70,7 +99,8 @@
           </p>
           <p *ngIf="!ultimoRespaldo">Sin respaldos registrados todavía.</p>
           <p class="backup-schedule">
-            <i class="fa-solid fa-clock"></i> Respaldo automático programado diariamente a las 2:00 AM.
+            <i class="fa-solid fa-clock"></i> Respaldo automático programado diariamente a las 2:00
+            AM.
           </p>
         </div>
       </div>
@@ -80,7 +110,9 @@
           <i class="fa-solid fa-clock-rotate-left"></i> Historial
         </button>
         <button class="btn-primary" [disabled]="ejecutandoRespaldo" (click)="ejecutarRespaldo()">
-          <span *ngIf="!ejecutandoRespaldo"><i class="fa-solid fa-rotate"></i> Respaldar ahora</span>
+          <span *ngIf="!ejecutandoRespaldo"
+            ><i class="fa-solid fa-rotate"></i> Respaldar ahora</span
+          >
           <span *ngIf="ejecutandoRespaldo">Ejecutando...</span>
         </button>
       </div>
@@ -88,7 +120,9 @@
 
     <!-- HISTORIAL -->
     <div class="backup-history" *ngIf="mostrarHistorial">
-      <div *ngIf="loadingHistorial" style="text-align: center; padding: 16px;">Cargando historial...</div>
+      <div *ngIf="loadingHistorial" style="text-align: center; padding: 16px">
+        Cargando historial...
+      </div>
 
       <table *ngIf="!loadingHistorial" class="history-table">
         <thead>
@@ -102,7 +136,11 @@
           <tr *ngFor="let r of historialRespaldos">
             <td>{{ r.res_fec | date: 'dd/MM/yyyy HH:mm' }}</td>
             <td>
-              <span class="tipo-pill" [class.auto]="r.res_tipo === 'AUTO'" [class.manual]="r.res_tipo === 'MANUAL'">
+              <span
+                class="tipo-pill"
+                [class.auto]="r.res_tipo === 'AUTO'"
+                [class.manual]="r.res_tipo === 'MANUAL'"
+              >
                 {{ r.res_tipo }}
               </span>
             </td>
@@ -111,7 +149,10 @@
         </tbody>
       </table>
 
-      <div *ngIf="!loadingHistorial && historialRespaldos.length === 0" style="text-align: center; padding: 16px; color: var(--text-sub); font-size: 13px;">
+      <div
+        *ngIf="!loadingHistorial && historialRespaldos.length === 0"
+        style="text-align: center; padding: 16px; color: var(--text-sub); font-size: 13px"
+      >
         No hay respaldos registrados.
       </div>
     </div>

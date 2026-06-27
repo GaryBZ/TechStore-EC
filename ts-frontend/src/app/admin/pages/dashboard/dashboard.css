@@ -219,3 +219,29 @@
 
 .tipo-pill.auto { background: var(--primary-tint); color: var(--primary); }
 .tipo-pill.manual { background: var(--warning-bg); color: var(--warning); }
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.chart-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+
+.chart-card h3 {
+  margin: 0 0 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.chart-wrap {
+  height: 260px;
+  position: relative;
+}

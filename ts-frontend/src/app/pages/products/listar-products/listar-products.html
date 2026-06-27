@@ -42,7 +42,11 @@
           <p class="meta">{{ getMarcaNombre(prod.mar_id) }} — {{ prod.prd_des }}</p>
           <div class="card-bottom">
             <span class="price">${{ prod.prd_pre_ven | number: '1.0-2' }}</span>
-            <button class="add-cart-btn" (click)="addToCart(prod)">
+            <button
+              class="add-cart-btn"
+              [disabled]="agregandoIds.has(prod.prd_id)"
+              (click)="addToCart(prod)"
+            >
               <i class="fa-solid fa-cart-shopping"></i>
             </button>
           </div>

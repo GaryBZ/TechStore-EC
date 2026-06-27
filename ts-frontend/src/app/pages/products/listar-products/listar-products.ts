@@ -11,7 +11,6 @@ import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { CarritoService } from '../../../core/services/carrito.service';
 
-
 @Component({
   selector: 'app-listar-products',
   imports: [FormsModule, CommonModule],
@@ -23,6 +22,7 @@ export class ListarProducts implements OnInit {
   products: ProductoModel[] = [];
   categorias: CategoriaModel[] = [];
   marcas: MarcaModel[] = [];
+  agregandoIds = new Set<number>();
 
   query = '';
   sortBy = 'recientes';
@@ -97,8 +97,7 @@ export class ListarProducts implements OnInit {
 
   get sortedProducts(): ProductoModel[] {
     let result = [...this.products];
-    if (this.sortBy === 'precio-asc')
-      result = result.sort((a, b) => a.prd_pre_ven - b.prd_pre_ven);
+    if (this.sortBy === 'precio-asc') result = result.sort((a, b) => a.prd_pre_ven - b.prd_pre_ven);
     if (this.sortBy === 'precio-desc')
       result = result.sort((a, b) => b.prd_pre_ven - a.prd_pre_ven);
     return result;
@@ -112,15 +111,25 @@ export class ListarProducts implements OnInit {
     return this.marcas.find((m) => m.mar_id === mar_id)?.mar_nom ?? '';
   }
 
-addToCart(prod: ProductoModel): void {
-  const usuario = this.authService.getCurrentUser();
-  if (!usuario) {
-    return;
-  }
+  addToCart(prod: ProductoModel): void {
+    if (this.agregandoIds.has(prod.prd_id)) return; // ya hay una petición en curso para este producto
 
-  this.carritoService.agregarProducto(usuario.usu_id, prod.prd_id, 1).subscribe({
-    next: () => console.log('Producto agregado al carrito'),
-    error: (err) => console.error('Error agregando al carrito', err),
-  });
-}
+    const usuario = this.authService.getCurrentUser();
+    if (!usuario) {
+      return;
+    }
+
+    this.agregandoIds.add(prod.prd_id);
+
+    this.carritoService.agregarProducto(usuario.usu_id, prod.prd_id, 1).subscribe({
+      next: () => {
+        console.log('Producto agregado al carrito');
+        this.agregandoIds.delete(prod.prd_id);
+      },
+      error: (err) => {
+        console.error('Error agregando al carrito', err);
+        this.agregandoIds.delete(prod.prd_id);
+      },
+    });
+  }
 }
