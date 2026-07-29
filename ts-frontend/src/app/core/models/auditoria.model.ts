@@ -10,7 +10,6 @@ export interface AuditoriaModel {
   aud_ip: string | null;
   aud_fec: string | null;
 }
-
 export function getNivelCriticidad(tabla: string, accion: string): string | null {
   const tab = (tabla || '').toLowerCase();
   const acc = (accion || '').toUpperCase();
