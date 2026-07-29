@@ -1,0 +1,45 @@
+<div class="notif-wrapper">
+  <button
+    #bellBtn
+    class="notif-bell"
+    [class.tiene-pendientes]="notiService.noLeidas() > 0"
+    (click)="toggle()"
+    title="Notificaciones"
+  >
+    <i class="fa-solid fa-bell"></i>
+    @if (notiService.noLeidas() > 0) {
+      <span class="notif-badge">{{ notiService.noLeidas() > 9 ? '9+' : notiService.noLeidas() }}</span>
+    }
+  </button>
+
+  @if (abierto) {
+    <div class="notif-dropdown" [ngStyle]="dropdownStyle">
+      <div class="notif-header">
+        <span>Notificaciones</span>
+        @if (notiService.noLeidas() > 0) {
+          <button class="notif-marcar-todas" (click)="marcarTodas()">Marcar todas leídas</button>
+        }
+      </div>
+
+      <div class="notif-list">
+        @if (notiService.notificaciones().length === 0) {
+          <div class="notif-empty">Sin notificaciones pendientes</div>
+        }
+        @for (n of notiService.notificaciones(); track n.not_id) {
+          <div class="notif-item" [class.notif-critica]="n.not_niv === 'CRITICA'">
+            <div class="notif-item-top">
+              <span class="notif-nivel" [class.nivel-critica]="n.not_niv === 'CRITICA'">
+                {{ n.not_niv }}
+              </span>
+              <span class="notif-fecha">{{ n.not_fec | date: 'short' }}</span>
+            </div>
+            <p class="notif-msj">{{ n.not_msj }}</p>
+            <button class="notif-leida-btn" (click)="marcarLeida(n.not_id, $event)">
+              Marcar como leída
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

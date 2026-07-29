@@ -1,0 +1,178 @@
+.notif-wrapper {
+  position: relative;
+  align-self: flex-start;
+}
+
+.notif-bell {
+  box-sizing: border-box;
+  position: relative;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-sub);
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.notif-bell:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.notif-bell.tiene-pendientes {
+  color: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-tint);
+}
+
+.notif-badge {
+  box-sizing: border-box;
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 18px;
+  height: 18px;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border: 2px solid #0b0b0b;
+  padding: 0;
+}
+
+/* position/left/bottom se inyectan por JS via [ngStyle] (dropdownStyle) */
+.notif-dropdown {
+  width: 310px;
+  max-height: 400px;
+  background: #141414; /* sólido a propósito, sin depender de --surface-2 por si trae alpha */
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+  overflow: hidden;
+  animation: notif-dropdown-in 0.15s ease-out;
+}
+
+@keyframes notif-dropdown-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.notif-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  font-family: var(--font-head);
+}
+
+.notif-marcar-todas {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 11px;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+.notif-marcar-todas:hover {
+  text-decoration: underline;
+}
+
+.notif-list {
+  overflow-y: auto;
+  max-height: 340px;
+}
+
+.notif-empty {
+  padding: 28px 14px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.notif-item {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border);
+  border-left: 3px solid transparent;
+  transition: background 0.15s;
+}
+
+.notif-item:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.notif-item:last-child {
+  border-bottom: none;
+}
+
+.notif-item.notif-critica {
+  border-left-color: var(--danger);
+}
+
+.notif-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.notif-nivel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.notif-nivel.nivel-critica {
+  background: var(--danger);
+  color: #fff;
+}
+
+.notif-fecha {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.notif-msj {
+  font-size: 12px;
+  color: var(--text-sub);
+  margin: 0 0 7px 0;
+  line-height: 1.45;
+}
+
+.notif-leida-btn {
+  background: none;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-size: 11px;
+  color: var(--text-sub);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.notif-leida-btn:hover {
+  color: var(--text);
+  border-color: var(--text-muted);
+}

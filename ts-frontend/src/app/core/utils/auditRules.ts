@@ -1,20 +1,15 @@
-export interface AuditoriaModel {
-  aud_id: number;
-  usu_id: number | null;
-  usu_nom?: string | null;
-  usu_ape?: string | null;
-  aud_tab: string;
-  aud_acc: string;
-  aud_val_ant: string | null;
-  aud_val_nue: string | null;
-  aud_ip: string | null;
-  aud_fec: string | null;
-}
-
+/**
+ * Espejo de las reglas de criticidad del backend (src/config/auditRules.js).
+ * Es solo para mostrar el nivel en la tabla de Auditoría del frontend.
+ * No participa en la lógica real de notificaciones (esa vive 100% en el backend).
+ *
+ * Si luego cambias algo en el auditRules.js del backend, refleja el mismo
+ * cambio aquí para que la UI no quede desincronizada.
+ */
 export function getNivelCriticidad(tabla: string, accion: string): string | null {
   const tab = (tabla || '').toLowerCase();
   const acc = (accion || '').toUpperCase();
- 
+
   if (tab === 'usuarios') {
     if (acc === 'DELETE') return 'CRITICA';
     if (acc === 'UPDATE') return 'MEDIA';
@@ -44,10 +39,10 @@ export function getNivelCriticidad(tabla: string, accion: string): string | null
     if (acc === 'UPDATE') return 'MEDIA';
     if (acc === 'DELETE') return 'ALTA';
   }
- 
+
   return null;
 }
- 
+
 export function claseNivel(nivel: string | null): string {
   if (nivel === 'CRITICA') return 'p-red';
   if (nivel === 'ALTA') return 'p-yellow';

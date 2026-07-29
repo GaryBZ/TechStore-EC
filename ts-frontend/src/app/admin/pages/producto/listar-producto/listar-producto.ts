@@ -10,6 +10,7 @@ import { MarcaModel } from '../../../../core/models/marca.model';
 import { MarcaService } from '../../../../core/services/marca.service';
 import { TipoService } from '../../../../core/services/tipo.service';
 import { TipoModel } from '../../../../core/models/tipo.model';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-listar-producto',
@@ -19,7 +20,7 @@ import { TipoModel } from '../../../../core/models/tipo.model';
   changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ListarProducto implements OnInit {
-products: ProductoModel[] = [];
+  products: ProductoModel[] = [];
   categorias: CategoriaModel[] = [];
   marcas: MarcaModel[] = [];
   tipos: TipoModel[] = [];
@@ -34,6 +35,7 @@ products: ProductoModel[] = [];
     private productoService: ProductoService,
     private categoriaService: CategoriaService,
     private marcaService: MarcaService,
+    private authService: AuthService,
     private tipoService: TipoService,
     private cdr: ChangeDetectorRef,
     private router: Router,
@@ -44,6 +46,11 @@ products: ProductoModel[] = [];
     this.loadCategorias();
     this.loadMarcas();
     this.loadTipos();
+  }
+
+  get esAdministrador(): boolean {
+    const rol = this.authService.getCurrentUser()?.rol_nom;
+    return rol === 'administrador' || rol === 'admin';
   }
 
   loadProductos(): void {
@@ -63,21 +70,30 @@ products: ProductoModel[] = [];
 
   loadCategorias(): void {
     this.categoriaService.getAll().subscribe({
-      next: (data) => { this.categorias = data; this.cdr.detectChanges(); },
+      next: (data) => {
+        this.categorias = data;
+        this.cdr.detectChanges();
+      },
       error: (err) => console.error('Error cargando categorías', err),
     });
   }
 
   loadMarcas(): void {
     this.marcaService.getAll().subscribe({
-      next: (data) => { this.marcas = data; this.cdr.detectChanges(); },
+      next: (data) => {
+        this.marcas = data;
+        this.cdr.detectChanges();
+      },
       error: (err) => console.error('Error cargando marcas', err),
     });
   }
 
   loadTipos(): void {
     this.tipoService.getAll().subscribe({
-      next: (data) => { this.tipos = data; this.cdr.detectChanges(); },
+      next: (data) => {
+        this.tipos = data;
+        this.cdr.detectChanges();
+      },
       error: (err) => console.error('Error cargando tipos', err),
     });
   }

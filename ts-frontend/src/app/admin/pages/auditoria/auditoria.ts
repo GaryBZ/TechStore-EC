@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AuditoriaModel } from '../../../core/models/auditoria.model';
+import { AuditoriaModel, claseNivel, getNivelCriticidad } from '../../../core/models/auditoria.model';
 import { AuditoriaService } from '../../../core/services/auditoria.service';
 
 @Component({
@@ -17,16 +17,16 @@ export class Auditoria implements OnInit {
   filterTabla = '';
   filterAccion = '';
   loading = false;
-
+ 
   constructor(
     private auditoriaService: AuditoriaService,
     private cdr: ChangeDetectorRef,
   ) {}
-
+ 
   ngOnInit(): void {
     this.loadAuditoria();
   }
-
+ 
   loadAuditoria(): void {
     this.loading = true;
     this.auditoriaService.getAll().subscribe({
@@ -41,7 +41,7 @@ export class Auditoria implements OnInit {
       },
     });
   }
-
+ 
   formatJson(value: any): string {
     if (!value) return '—';
     if (typeof value === 'string') return value;
@@ -51,17 +51,30 @@ export class Auditoria implements OnInit {
       return String(value);
     }
   }
-
+ 
   get tablas(): string[] {
     return [...new Set(this.auditorias.map((a) => a.aud_tab))].sort();
   }
-
+ 
   getNombreUsuario(aud: AuditoriaModel): string {
     if (!aud.usu_id) return 'Sistema';
     if (!aud.usu_nom) return `Usuario #${aud.usu_id}`;
     return `${aud.usu_nom} ${aud.usu_ape ?? ''}`.trim();
   }
-
+ 
+  // Requiere que el backend/SP incluya rol_nom en el join (ver nota aparte)
+  getRolUsuario(aud: AuditoriaModel): string {
+    return (aud as any).rol_nom ?? '—';
+  }
+ 
+  getNivel(aud: AuditoriaModel): string {
+    return getNivelCriticidad(aud.aud_tab, aud.aud_acc) ?? '—';
+  }
+ 
+  getClaseNivel(aud: AuditoriaModel): string {
+    return claseNivel   (getNivelCriticidad(aud.aud_tab, aud.aud_acc));
+  }
+ 
   get filteredAuditoria(): AuditoriaModel[] {
     return this.auditorias.filter((a) => {
       const matchSearch =

@@ -23,7 +23,7 @@
   </select>
   <span class="count-chip">{{ filteredProducts.length }} productos</span>
   <div class="ml-auto" style="display: flex; gap: 8px">
-    <button class="btn-primary" (click)="goToCreate()">
+    <button class="btn-primary" *ngIf="esAdministrador" (click)="goToCreate()">
       <i class="fa-solid fa-plus"></i> Nuevo producto
     </button>
   </div>
@@ -46,7 +46,7 @@
         <th style="width: 100px">Precio</th>
         <th style="width: 80px">Stock mín.</th>
         <th style="width: 90px">Estado</th>
-        <th style="width: 96px; text-align: right; padding-right: 20px">Acciones</th>
+        <th style="width: 96px; text-align: right; padding-right: 20px" *ngIf="esAdministrador">Acciones</th>
       </tr>
     </thead>
     <tbody>
@@ -75,12 +75,20 @@
           </span>
         </td>
 
-        <td>
+        <td *ngIf="esAdministrador">
           <div class="td-actions">
-            <button class="btn-icon btn-icon-edit" (click)="gestionar(producto.prd_id)">
+            <button
+              class="btn-icon btn-icon-edit"
+              *ngIf="esAdministrador"
+              (click)="gestionar(producto.prd_id)"
+            >
               <i class="fa-solid fa-pen"></i>
             </button>
-            <button class="btn-icon btn-icon-del" (click)="deleteProduct(producto.prd_id)">
+            <button
+              class="btn-icon btn-icon-del"
+              *ngIf="esAdministrador"
+              (click)="deleteProduct(producto.prd_id)"
+            >
               <i class="fa-solid fa-trash"></i>
             </button>
           </div>

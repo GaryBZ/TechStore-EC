@@ -31,7 +31,9 @@
     <thead>
       <tr>
         <th style="width: 48px">ID</th>
-        <th style="width: 90px">Usuario</th>
+        <th style="width: 110px">Usuario</th>
+        <th style="width: 90px">Rol</th>
+        <th style="width: 90px">Criticidad</th>
         <th style="width: 110px">Tabla</th>
         <th style="width: 90px">Acción</th>
         <th>Valor anterior</th>
@@ -44,6 +46,14 @@
       <tr *ngFor="let aud of filteredAuditoria">
         <td class="td-dim td-num">{{ aud.aud_id }}</td>
         <td class="td-dim">{{ getNombreUsuario(aud) }}</td>
+        <td class="td-dim">{{ getRolUsuario(aud) }}</td>
+
+        <td>
+          <span class="pill" [ngClass]="getClaseNivel(aud)">
+            <i class="fa-solid fa-circle"></i> {{ getNivel(aud) }}
+          </span>
+        </td>
+
         <td class="td-dim">{{ aud.aud_tab }}</td>
 
         <td>
